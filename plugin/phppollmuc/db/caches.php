@@ -1,0 +1,33 @@
+<?php
+$definitions = [
+    'events' => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'simpledata' => false,
+        'requiredataguarantee' => false,
+        'requiremultipleidentifiers' => false,
+        'requirelockingread' => false,
+        'requirelockingwrite' => false,
+        'staticacceleration' => false,
+        'ttl' => 300,
+        'mappingsonly' => false,
+        'canuselocalstore' => false,
+        'sharingoptions' => cache_definition::SHARING_DEFAULT,
+        'defaultsharing' => cache_definition::SHARING_DEFAULT,
+    ],
+    'tracker' => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'simpledata' => true,
+        'requiredataguarantee' => true,
+        'requiremultipleidentifiers' => false,
+        'requirelockingread' => false,
+        'requirelockingwrite' => false,
+        'staticacceleration' => false,
+        'ttl' => 0,
+        'mappingsonly' => false,
+        'canuselocalstore' => false,
+        'sharingoptions' => cache_definition::SHARING_DEFAULT,
+        'defaultsharing' => cache_definition::SHARING_DEFAULT,
+    ],
+];
