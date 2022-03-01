@@ -2,7 +2,7 @@
 $definitions = [
     'events' => [
         'mode' => cache_store::MODE_APPLICATION,
-        'simplekeys' => true,
+        'simplekeys' => false,
         'simpledata' => false,
         'requiredataguarantee' => false,
         'requiremultipleidentifiers' => false,
@@ -17,7 +17,7 @@ $definitions = [
     ],
     'tracker' => [
         'mode' => cache_store::MODE_APPLICATION,
-        'simplekeys' => true,
+        'simplekeys' => false,
         'simpledata' => true,
         'requiredataguarantee' => true,
         'requiremultipleidentifiers' => false,
