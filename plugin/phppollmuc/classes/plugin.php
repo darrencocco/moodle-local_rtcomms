@@ -32,7 +32,7 @@ use tool_realtime\plugin_base;
  * Class realtimeplugin_phppollmuc\plugin
  *
  * @package     realtimeplugin_phppollmuc
- * @copyright   2020 Marina Glancy
+ * @copyright   2021 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plugin extends plugin_base {
@@ -61,14 +61,21 @@ class plugin extends plugin_base {
      */
     public function subscribe(\context $context, string $component, string $area, int $itemid): void {
         // TODO check that area is defined only as letters and numbers.
+        // TODO: this should be JS with a web-service providing assistance.
         global $PAGE, $USER, $DB;
         if (!$this->is_set_up() || !isloggedin() || isguestuser()) {
             return;
         }
         self::init();
-        $fromid = (int)$DB->get_field_sql("SELECT max(id) FROM {" . self::TABLENAME .
-            "} WHERE contextid = ?", [$context->id]);
+
+        $eventtracker = \cache::make('realtimeplugin_phppollmuc', 'tracker');
+        $fromid = $eventtracker->get($this->generate_cache_item_tracker($context->id, $component, $area, $itemid));
+        if ($fromid === false) {
+            $fromid = 0;
+        }
         $fromtimestamp = microtime(true);
+
+        // TODO: WTF is this  $url definition for?
         $url = new \moodle_url('/admin/tool/realtime/plugin/phppollmuc/poll.php');
         $PAGE->requires->js_call_amd('realtimeplugin_phppollmuc/realtime', 'subscribe',
             [ $context->id, $component, $area, $itemid, $fromid, $fromtimestamp]);
@@ -80,7 +87,8 @@ class plugin extends plugin_base {
      */
     public function init(): void {
         // TODO check that area is defined only as letters and numbers.
-        global $PAGE, $USER, $DB;
+        // TODO: This should probably be pure JS with some backend web-services to handle things.
+        global $PAGE, $USER;
         if (!$this->is_set_up() || !isloggedin() || isguestuser() || self::$initialised) {
             return;
         }
