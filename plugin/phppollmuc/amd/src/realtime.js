@@ -3,7 +3,7 @@
  *
  * @module     realtimeplugin_phppollmuc/realtime
  * @package    realtimeplugin_phppollmuc
- * @copyright  2020 Marina Glancy
+ * @copyright  2022 Darren Cocco
  */
 define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents,api) {
 
@@ -50,7 +50,7 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
                     for (var i in events) {
                         PubSub.publish(RealTimeEvents.EVENT, events[i]);
                         // Remember the last id.
-                        params.fromid = events[i].id;
+                        params.fromid = events[i].index;
                     }
                     // And start polling again.
                     setTimeout(poll, params.timeout);
@@ -127,7 +127,6 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
             if(channeltosubto) {
                 channels.push(channeltosubto);
             }
-            console.log(channels);
             setTimeout(poll, params.timeout);
         }
     };

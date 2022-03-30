@@ -18,7 +18,7 @@
  * Class realtimeplugin_phppollmuc\plugin
  *
  * @package     realtimeplugin_phppollmuc
- * @copyright   2020 Marina Glancy
+ * @copyright   2022 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +32,7 @@ use tool_realtime\plugin_base;
  * Class realtimeplugin_phppollmuc\plugin
  *
  * @package     realtimeplugin_phppollmuc
- * @copyright   2021 Darren Cocco
+ * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plugin extends plugin_base {
@@ -131,6 +131,7 @@ class plugin extends plugin_base {
         // Work out what the key will be for this event.
         $lastwrittenid = $eventtracker->get($lastwrittentracker);
         $nextkey = $this->generate_cache_item_id($lastwrittenid + 1, $context->id, $component, $area, $itemid);
+        $data['index'] = $lastwrittenid + 1;
 
         // Write the data.
         $eventcache->set($nextkey, $data);
@@ -204,9 +205,12 @@ class plugin extends plugin_base {
 
         $events = $eventcache->get_many($ids);
 
+        $events = array_filter($events, function($event) {
+            return $event !== false;
+        });
         array_walk($events, function(&$item) {
             // TODO: Should filter based on time stamp.
-            $context = \context::instance_by_id($item->contextid);
+            $context = \context::instance_by_id($item["contextid"]);
             $item->context = ['id' => $context->id, 'contextlevel' => $context->contextlevel,
                 'instanceid' => $context->instanceid];
             unset($item->contextid);

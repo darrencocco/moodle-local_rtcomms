@@ -18,7 +18,7 @@
  * Plugin version and other meta-data are defined here.
  *
  * @package     realtimeplugin_phppollmuc
- * @copyright   2020 Marina Glancy
+ * @copyright   2022 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -26,5 +26,5 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'realtimeplugin_phppollmuc';
 $plugin->release = '1.0';
-$plugin->version = 2020052400;
+$plugin->version = 2021032900;
 $plugin->requires = 2019052000;
