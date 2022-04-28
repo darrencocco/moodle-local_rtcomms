@@ -37,6 +37,8 @@ class realtimeplugin_phppollmuc_testcase extends advanced_testcase {
     public function test_notify_and_get_all() {
         global $USER;
         $this->resetAfterTest();
+        // Enable the phppollmuc plugin.
+        set_config('enabled', 'phppollmuc', 'tool_realtime');
         /** @var \realtimeplugin_phppollmuc\plugin $plugin */
         $plugin = \tool_realtime\manager::get_plugin();
         $this->assertInstanceOf(realtimeplugin_phppollmuc\plugin::class, $plugin);
@@ -44,7 +46,7 @@ class realtimeplugin_phppollmuc_testcase extends advanced_testcase {
         $context = context_user::instance($USER->id);
         $plugin->subscribe($context, 'testcomponent', 'testarea', 7);
         $plugin->notify($context, 'testcomponent', 'testarea', 7, ['a' => 'b']);
-        $results = $plugin->get_all($USER->id, 0);
+        $results = $plugin->get_all($context->id, 0, 'testcomponent', 'testarea', 7, 0);
         $this->assertCount(1, $results);
         $result = (array)reset($results);
         unset($result['id']);
@@ -53,6 +55,8 @@ class realtimeplugin_phppollmuc_testcase extends advanced_testcase {
             'area' => 'testarea',
             'itemid' => 7,
             'payload' => ['a' => 'b'],
+            'timecreated' => time(),
+            'index' => 1,
             'context' => [
                 'id' => $context->id,
                 'contextlevel' => CONTEXT_USER,

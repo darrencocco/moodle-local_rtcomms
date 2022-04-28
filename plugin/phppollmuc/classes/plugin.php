@@ -211,9 +211,9 @@ class plugin extends plugin_base {
         array_walk($events, function(&$item) {
             // TODO: Should filter based on time stamp.
             $context = \context::instance_by_id($item["contextid"]);
-            $item->context = ['id' => $context->id, 'contextlevel' => $context->contextlevel,
+            $item["context"] = ['id' => $context->id, 'contextlevel' => $context->contextlevel,
                 'instanceid' => $context->instanceid];
-            unset($item->contextid);
+            unset($item["contextid"]);
         });
         return $events;
     }
