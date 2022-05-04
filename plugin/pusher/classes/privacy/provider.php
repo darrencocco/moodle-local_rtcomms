@@ -15,19 +15,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin strings are defined here.
+ * Privacy Subsystem implementation for realtimeplugin_pusher.
  *
- * @package     realtimeplugin_pusher
- * @category    string
- * @copyright  2020 Daniel Conquit, Matthew Gray, Nicholas Parker, Dan Thistlethwaite
+ * @package    realtimeplugin_pusher
+ * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace realtimeplugin_pusher\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Pusher';
-$string['app_id'] = 'Application Identifier';
-$string['key'] = 'Application';
-$string['secret'] = 'Secret Key';
-$string['cluster'] = 'Cluster';
-$string['privacy:metadata'] = 'The PHP pusher plugin only stores user information for a short period of time';
+/**
+ * Implementation of the privacy subsystem plugin provider for the realtimeplugin_pusher
+ *
+ * @copyright  2020 Marina Glancy
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class provider implements \core_privacy\local\metadata\null_provider {
+
+    /**
+     * Returns stringid of a text explaining that this plugin stores no personal data.
+     *
+     * @return string
+     */
+    public static function get_reason(): string {
+        return 'privacy:metadata';
+    }
+}
