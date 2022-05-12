@@ -61,6 +61,8 @@ $plugin = \tool_realtime\manager::get_plugin();
 $maxduration = $plugin->get_request_timeout(); // In seconds as float.
 $sleepinterval = $plugin->get_delay_between_checks() * 1000; // In microseconds.
 
+$counter = 0;
+
 while (true) {
     if (!$plugin->validate_token($userid, $token)) {
         // User is no longer logged in or token is wrong. Do not poll any more.
@@ -87,5 +89,7 @@ while (true) {
         echo json_encode(['success' => 1, 'events' => []]);
         exit;
     }
+    error_log("Cycle: $counter, User: $userid, Time: " . microtime());
+    $counter++;
     usleep($sleepinterval);
 }
