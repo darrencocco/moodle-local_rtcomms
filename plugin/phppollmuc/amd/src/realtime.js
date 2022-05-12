@@ -12,6 +12,8 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
     var requestscounter = [];
     var pollURL;
     var ajax = new XMLHttpRequest(), json;
+    var failureCount = 0;
+    var maxTimeout = 300000;
 
     var checkRequestCounter = function() {
         var curDate = new Date(),
@@ -34,6 +36,7 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
         ajax.onreadystatechange = function() {
             if (this.readyState === 4 && this.status === 200) {
                 if (this.status === 200) {
+                    failureCount = 0;
                     try {
                         json = JSON.parse(this.responseText);
                     } catch {
@@ -41,7 +44,11 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
                         return;
                     }
                     if (!json.success || json.success !== 1) {
-                        // Poll.php returned an error or an exception. Stop trying to poll.
+                        failureCount++;
+                        // Pick the smallest between the e ^ failures * normalTimeout OR maxTimeout
+                        var multiplier = Math.min(Math.trunc(Math.pow(Math.E, failureCount) * params.timeout),
+                            maxTimeout);
+                        setTimeout (poll, multiplier);
                         return;
                     }
 
