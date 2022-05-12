@@ -28,15 +28,20 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
         return true;
     };
 
+    // Pick the smallest between the e ^ failures * normalTimeout OR maxTimeout
+    var expWaitTime = function() {
+        return Math.min(Math.trunc(Math.pow(Math.E, failureCount) * params.timeout),
+            maxTimeout);
+    };
+
     var poll = function() {
         if (!checkRequestCounter()) {
             // Too many requests, stop polling.
             return;
         }
         ajax.onreadystatechange = function() {
-            if (this.readyState === 4 && this.status === 200) {
+            if (this.readyState === 4) {
                 if (this.status === 200) {
-                    failureCount = 0;
                     try {
                         json = JSON.parse(this.responseText);
                     } catch {
@@ -45,12 +50,11 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
                     }
                     if (!json.success || json.success !== 1) {
                         failureCount++;
-                        // Pick the smallest between the e ^ failures * normalTimeout OR maxTimeout
-                        var multiplier = Math.min(Math.trunc(Math.pow(Math.E, failureCount) * params.timeout),
-                            maxTimeout);
-                        setTimeout (poll, multiplier);
+                        setTimeout (poll, expWaitTime());
                         return;
                     }
+
+                    failureCount = 0;
 
                     // Process results - trigger all necessary Javascript/jQuery events.
                     var events = json.events;
@@ -63,7 +67,7 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
                     setTimeout(poll, params.timeout);
                 } else {
                     // Must be a server timeout or loss of network - start new process.
-                    setTimeout(poll, params.timeout);
+                    setTimeout(poll, expWaitTime());
                 }
             }
         };
