@@ -66,6 +66,7 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
                     // And start polling again.
                     setTimeout(poll, params.timeout);
                 } else {
+                    failureCount++;
                     // Must be a server timeout or loss of network - start new process.
                     setTimeout(poll, expWaitTime());
                 }
