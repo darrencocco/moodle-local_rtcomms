@@ -205,11 +205,11 @@ class plugin extends plugin_base {
 
         $events = $eventcache->get_many($ids);
 
-        $events = array_filter($events, function($event) {
-            return $event !== false;
+        $events = array_filter($events, function($event)  use ($fromtimestampseconds) {
+            return $event !== false &&
+                $event["timecreated"] > $fromtimestampseconds;
         });
         array_walk($events, function(&$item) {
-            // TODO: Should filter based on time stamp.
             $context = \context::instance_by_id($item["contextid"]);
             $item["context"] = ['id' => $context->id, 'contextlevel' => $context->contextlevel,
                 'instanceid' => $context->instanceid];
