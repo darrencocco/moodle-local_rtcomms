@@ -24,7 +24,7 @@
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->dirroot . '/lib/adminlib.php');
-require "$CFG->libdir/tablelib.php";
+require_once($CFG->libdir . '/tablelib.php');
 
 //TODO: Make this page visible to any user so that user access permissions may be checked.
 
