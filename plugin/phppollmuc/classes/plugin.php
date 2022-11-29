@@ -172,7 +172,7 @@ class plugin extends plugin_base {
      */
     public static function validate_token(int $userid, string $token) {
         global $DB;
-        $sessions = $DB->get_records('sessions', ['userid' => $userid]);
+        $sessions = \core\session\manager::get_sessions_by_userid($userid);
         foreach ($sessions as $session) {
             if (self::get_token_for_user($userid, $session->sid) === $token) {
                 return true;
