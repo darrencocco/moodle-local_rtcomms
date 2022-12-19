@@ -18,9 +18,8 @@
  * Poll for updates.
  *
  * @package     realtimeplugin_phppollmuc
- * @copyright   2020 Marina Glancy
+ * @copyright   2022 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
 
 define('AJAX_SCRIPT', true);
@@ -30,24 +29,27 @@ require_once(__DIR__ . '/../../../../../config.php');
 
 // We do not want to call require_login() here because we don't want to update 'lastaccess' and keep session alive.
 // Last event id seen.
-$fromid = optional_param('fromid', 0, PARAM_INT);
+$fromid = optional_param('fromid', 0, PARAM_INT); // FIXME: Might deprecate this.
 // Last event id seen.
 
 // Who is the current user making request.
 $userid = optional_param('userid', 0, PARAM_INT);
 $token = optional_param('token', '', PARAM_RAW);
 // Explode parameter strings.
-$paramarray = explode(':', optional_param('channel', '', PARAM_RAW));
-$contextunprocessed = $paramarray[0];
-$context = explode('-', $contextunprocessed);
-$componentunprocessed = $paramarray[1];
-$component = explode('-', $componentunprocessed);
-$areaunprocessed = $paramarray[2];
-$area = explode('-', $areaunprocessed);
-$itemidunprocessed = $paramarray[3];
-$itemid = explode('-', $itemidunprocessed);
-$fromtimestamp = $paramarray[4];
-$fromtimestampprocessed = explode('-', $fromtimestamp);
+$channelstrings = explode (';', optional_param('channel', '', PARAM_RAW));
+$channels = array_map(function($channelstring) {
+    $channeldefinition = explode(';', $channelstring);
+    if (count($channeldefinition) !== 5) {
+        // FIXME: needs to fail with an error message.
+    }
+    $channel = [];
+    $channel['contextid'] = clean_param($channeldefinition[0], PARAM_INT);
+    $channel['component'] = clean_param($channeldefinition[1], PARAM_ALPHA);
+    $channel['area'] = clean_param($channeldefinition[2], PARAM_ALPHA);
+    $channel['itemid'] = clean_param($channeldefinition[3], PARAM_INT);
+    $channel['fromtimestamp'] = clean_param($channeldefinition[4], PARAM_INT);
+    return $channel;
+}, $channelstrings);
 
 if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppollmuc') {
     echo json_encode(['error' => 'Plugin is not enabled']);
@@ -71,17 +73,15 @@ while (true) {
         exit;
     }
 
-    //TODO: check user rights to subscribe to channel.
+    $events = [];
+    foreach ($channels as $channel) {
+        $events += $plugin->get_all($channel['contextid'], 0, $channel['component'],
+            $channel['area'], $channel['itemid'], $channel['fromtimestamp']);
+    }
 
-    for ($x = 0; $x < count($component); $x++) {
-        if ($events = $plugin->get_all((intval($context[$x])), (int)$fromid, (string)$component[$x],
-            (string)$area[$x], (int)$itemid[$x], (float)$fromtimestampprocessed[$x])) {
-            // We have some notifications for this user - return them. The JS will then create a new request.
-            echo json_encode(['success' => 1, 'events' => array_values($events)]);
-        }
-        if (count($events) > 0) {
-            exit;
-        }
+    if (count($events) > 0) {
+        echo json_encode(['success' => 1, 'events' => array_values($events)]);
+        exit;
     }
 
     // Nothing new for this user. Sleep and check again.

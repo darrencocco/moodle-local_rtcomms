@@ -24,7 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/** @var stdClass $plugin */
 $plugin->component = 'realtimeplugin_phppollmuc';
-$plugin->release = '1.0';
-$plugin->version = 2021032900;
+$plugin->release = '1.1';
+$plugin->version = 2022121900;
 $plugin->requires = 2019052000;

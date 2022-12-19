@@ -13,15 +13,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- * Class realtimeplugin_phppollmuc\plugin
- *
- * @package     realtimeplugin_phppollmuc
- * @copyright   2022 Darren Cocco
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace realtimeplugin_phppollmuc;
 
 defined('MOODLE_INTERNAL') || die();
@@ -32,7 +23,7 @@ use tool_realtime\plugin_base;
  * Class realtimeplugin_phppollmuc\plugin
  *
  * @package     realtimeplugin_phppollmuc
- * @copyright   2020 Marina Glancy
+ * @copyright   2022 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plugin extends plugin_base {
@@ -66,7 +57,7 @@ class plugin extends plugin_base {
         if (!$this->is_set_up() || !isloggedin() || isguestuser()) {
             return;
         }
-        self::init();
+        $this->init();
 
         $eventtracker = \cache::make('realtimeplugin_phppollmuc', 'tracker');
         $fromid = $eventtracker->get($this->generate_cache_item_tracker($context->id, $component, $area, $itemid));
@@ -108,13 +99,14 @@ class plugin extends plugin_base {
      * @param int $itemid
      * @param array|null $payload
      */
-    public function notify(\context $context, string $component, string $area, int $itemid, ?array $payload = null): void {
+    public function notify(\context $context, string $component, string $area, int $itemid, string $permissionmethod, ?array $payload = null): void {
         $time = time();
         $data = [
             'contextid' => $context->id,
             'component' => $component,
             'area' => $area,
             'itemid' => $itemid,
+            'permissions' => $permissionmethod,
             'payload' => $payload,
             'timecreated' => $time
         ];
@@ -170,7 +162,7 @@ class plugin extends plugin_base {
      * @param string $token
      * @return bool
      */
-    public static function validate_token(int $userid, string $token) {
+    public function validate_token(int $userid, string $token) {
         global $DB;
         $sessions = \core\session\manager::get_sessions_by_userid($userid);
         foreach ($sessions as $session) {
@@ -200,14 +192,14 @@ class plugin extends plugin_base {
 
         $ids = $this->ids_for_retrieval($fromindex, $contextidentifier, $component, $area, $itemid);
 
-        $events = [];
-        $fromtimestampseconds = floor($fromtimestamp / 1000);
+        $fromtimestampseconds = floor($fromtimestamp / 1000) - 10;
 
         $events = $eventcache->get_many($ids);
 
         $events = array_filter($events, function($event)  use ($fromtimestampseconds) {
             return $event !== false &&
-                $event["timecreated"] > $fromtimestampseconds;
+                $event["timecreated"] > $fromtimestampseconds &&
+                $this->check_permissions($event);
         });
         array_walk($events, function(&$item) {
             $context = \context::instance_by_id($item["contextid"]);
@@ -216,6 +208,12 @@ class plugin extends plugin_base {
             unset($item["contextid"]);
         });
         return $events;
+    }
+
+    protected function check_permissions(array $event): bool {
+        // FIXME: Needs to verify that the permissionmethod is actually a valid static method.
+        return call_user_func($event["permissionmethod"], $event["contextid"], $event["component"],
+            $event["area"], $event["itemid"], $event["payload"]);
     }
 
     protected function generate_cache_item_id($index, $contextid, $component, $area, $itemid) {
@@ -245,7 +243,6 @@ class plugin extends plugin_base {
         if ($index > 0) {
             $range = $this->index_range_from_last_seen($index);
         } else {
-            // TODO: cache definition
             $eventtracker = \cache::make('realtimeplugin_phppollmuc', 'tracker');
             $lastwritten = $eventtracker->get($this->generate_cache_item_tracker($contextid, $component, $area, $itemid));
             $range = $this->index_range_from_last_written($lastwritten);

@@ -5,115 +5,80 @@
  * @package    realtimeplugin_phppollmuc
  * @copyright  2022 Darren Cocco
  */
-define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents,api) {
+define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents, api) {
 
-    var params;
-    var channels = [];
-    var requestscounter = [];
-    var pollURL;
-    var ajax = new XMLHttpRequest(), json;
-    var failureCount = 0;
-    var maxTimeout = 300000;
+    let params;
+    let channels = [];
+    let requestsCounter = [];
+    let pollURL;
+    let ajax = new XMLHttpRequest();
+    let json;
+    let timeout;
 
     var checkRequestCounter = function() {
         var curDate = new Date(),
             curTime = curDate.getTime();
-        requestscounter.push(curTime);
-        requestscounter = requestscounter.slice(-10);
+        requestsCounter.push(curTime);
+        requestsCounter = requestsCounter.slice(-10);
         // If there were 10 requests in less than 5 seconds, it must be an error. Stop polling.
-        if (requestscounter.length >= 10 && curTime - requestscounter[0] < 5000) {
-            PubSub.publish(RealTimeEvents.CONNECTION_LOST);
+        if (requestsCounter.length >= 10 && curTime - requestsCounter[0] < 5000) {
+            PubSub.publish(RealTimeEvents.CONNECTION_LOST, {});
             return false;
         }
         return true;
     };
 
-    // Pick the smallest between the e ^ failures * normalTimeout OR maxTimeout
-    var expWaitTime = function() {
-        return Math.min(Math.trunc(Math.pow(Math.E, failureCount) * params.timeout),
-            maxTimeout);
-    };
-
-    var poll = function() {
-        if (!checkRequestCounter()) {
-            // Too many requests, stop polling.
-            return;
-        }
-        ajax.onreadystatechange = function() {
-            if (this.readyState === 4) {
-                if (this.status === 200) {
-                    try {
-                        json = JSON.parse(this.responseText);
-                    } catch {
-                        setTimeout(poll, params.timeout);
-                        return;
-                    }
-                    if (!json.success || json.success !== 1) {
-                        failureCount++;
-                        setTimeout (poll, expWaitTime());
-                        return;
-                    }
-
-                    failureCount = 0;
-
-                    // Process results - trigger all necessary Javascript/jQuery events.
-                    var events = json.events;
-                    for (var i in events) {
-                        PubSub.publish(RealTimeEvents.EVENT, events[i]);
-                        // Remember the last id.
-                        params.fromid = events[i].index;
-                    }
-                    // And start polling again.
+    ajax.onreadystatechange = function() {
+        if (this.readyState === XMLHttpRequest.DONE) {
+            if (this.status === 200) {
+                try {
+                    json = JSON.parse(this.responseText);
+                } catch {
                     setTimeout(poll, params.timeout);
-                } else {
-                    failureCount++;
-                    // Must be a server timeout or loss of network - start new process.
-                    setTimeout(poll, expWaitTime());
+                    return;
+                }
+
+                // Process results - trigger all necessary Javascript/jQuery events.
+                var events = json.events;
+                for (var i in events) {
+                    PubSub.publish(RealTimeEvents.EVENT, events[i]);
+                    // Remember the last id.
+                    params.fromid = events[i].id;
                 }
             }
-        };
-        var url = pollURL + '?userid=' + encodeURIComponent(params.userid) + '&token=' +
-            encodeURIComponent(params.token) + '&fromid=' + encodeURIComponent(params.fromid);
+            resetTimeout();
+            queueNextPoll();
+        }
+    };
 
-        if(channels.length <= 0) {
+    let poll = function() {
+        if (!checkRequestCounter() || channels.length < 1) {
             return;
         }
 
-        var contextstring = "";
-        var componentstring = "";
-        var areastring = "";
-        var itemidstring = "";
-        var fromtimestampstring = "";
+        let url = pollURL + '?userid=' + encodeURIComponent(params.userid) + '&token=' +
+            encodeURIComponent(params.token) + '&fromid=' + encodeURIComponent(params.fromid);
 
-        for (var i = 0; i < channels.length; i++) {
-            if (i == channels.length - 1) {
-                contextstring += channels[i].context;
-                componentstring += channels[i].component;
-                areastring += channels[i].area;
-                itemidstring += channels[i].itemid;
-                fromtimestampstring += channels[i].fromtimestamp;
-            } else {
-                contextstring += channels[i].context + '-';
-                componentstring += channels[i].component + '-';
-                areastring += channels[i].area + '-';
-                itemidstring += channels[i].itemid + '-';
-                fromtimestampstring += channels[i].fromtimestamp + '-';
-            }
-        }
+        let channelParams = channels.reduce((accumulator, current) => {
+            return accumulator + current.context + ":" + current.component + ":"
+                + current.area + ":" + current.itemId + ":" + current.fromTimestamp + ";";
+        }, "");
 
-        var channelstring = '&channel=' + contextstring + ':'
-                                        + componentstring + ':'
-                                        + areastring + ':'
-                                        + itemidstring + ':'
-                                        + fromtimestampstring;
-
-        url += channelstring;
-
-        ajax.open('GET', url, true);
+        ajax.open('GET', url + "&channel=" + channelParams, true);
         ajax.send();
     };
 
-    var plugin =  {
+    let queueNextPoll = () => {
+        if (timeout === null) {
+            timeout = setTimeout(poll, params.timeout);
+        }
+    };
+
+    let resetTimeout = () => {
+        timeout = null;
+    };
+
+    let plugin = {
         init: function(userId, token, pollURLParam, timeout) {
             if (params && params.userid) {
                 // Log console dev error.
@@ -127,19 +92,19 @@ define(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(Pu
             pollURL = pollURLParam;
             api.setImplementation(plugin);
         },
-        subscribe: function(context, component, area, itemid, fromId, fromTimeStamp) {
+        subscribe: function(context, component, area, itemId, fromId, fromTimeStamp) {
             params.fromid = fromId;
-            var channeltosubto = {
-                                    context: context,
-                                    component: component,
-                                    area: area,
-                                    itemid: itemid,
-                                    fromtimestamp: fromTimeStamp,
-                                };
-            if(channeltosubto) {
-                channels.push(channeltosubto);
+            let channelToSubTo = {
+                context: context,
+                component: component,
+                area: area,
+                itemId: itemId,
+                fromTimestamp: fromTimeStamp,
+            };
+            if (channelToSubTo) {
+                channels.push(channelToSubTo);
             }
-            setTimeout(poll, params.timeout);
+            queueNextPoll();
         }
     };
     return plugin;
