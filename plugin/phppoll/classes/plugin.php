@@ -26,6 +26,7 @@ namespace realtimeplugin_phppoll;
 
 defined('MOODLE_INTERNAL') || die();
 
+use Closure;
 use tool_realtime\plugin_base;
 
 /**
@@ -61,17 +62,14 @@ class plugin extends plugin_base {
      */
     public function subscribe(\context $context, string $component, string $area, int $itemid): void {
         // TODO check that area is defined only as letters and numbers.
-        global $PAGE, $USER, $DB;
+        global $PAGE;
         if (!$this->is_set_up() || !isloggedin() || isguestuser()) {
             return;
         }
         self::init();
-        $fromid = (int)$DB->get_field_sql("SELECT max(id) FROM {" . self::TABLENAME .
-            "} WHERE contextid = ?", [$context->id]);
         $fromtimestamp = microtime(true);
-        $url = new \moodle_url('/admin/tool/realtime/plugin/phppoll/poll.php');
-        $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime', 'subscribe',
-            [ $context->id, $component, $area, $itemid, $fromid, $fromtimestamp]);
+        $PAGE->requires->js_call_amd('tool_realtime/api', 'subscribe',
+            [ $context->id, $component, $area, $itemid, -1, -1]);
     }
 
     /**
@@ -80,15 +78,21 @@ class plugin extends plugin_base {
      */
     public function init(): void {
         // TODO check that area is defined only as letters and numbers.
-        global $PAGE, $USER, $DB;
+        global $PAGE, $USER;
+        if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppoll') {
+            throw new \coding_exception("Attempted to initialise a realtime plugin that is not enabled.");
+        }
         if (!$this->is_set_up() || !isloggedin() || isguestuser() || self::$initialised) {
             return;
         }
         self::$initialised = true;
+        $earliestmessagecreationtime = $_SERVER['REQUEST_TIME'];
+        $maxfailures = get_config('realtimeplugin_phppoll', 'maxfailures');
+        $polltype = get_config('realtimeplugin_phppoll', 'polltype');
         $url = new \moodle_url('/admin/tool/realtime/plugin/phppoll/poll.php');
         $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime',  'init',
-            [$USER->id, self::get_token(), $url->out(false),
-                $this->get_delay_between_checks()]);
+            [$USER->id, self::get_token(), $url->out(false), $this->get_delay_between_checks(),
+                $maxfailures, $earliestmessagecreationtime, $polltype]);
     }
 
     /**
@@ -98,20 +102,36 @@ class plugin extends plugin_base {
      * @param string $component
      * @param string $area
      * @param int $itemid
+     * @param string $userselector
      * @param array|null $payload
+     * @throws \coding_exception
+     * @throws \dml_exception
      */
-    public function notify(\context $context, string $component, string $area, int $itemid, ?array $payload = null): void {
+    public function notify(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null): void {
         global $DB;
         $time = time();
-        $DB->insert_record(self::TABLENAME, [
-            'contextid' => $context->id,
-            'component' => $component,
-            'area' => $area,
-            'itemid' => $itemid,
-            'payload' => json_encode($payload ?? []),
-            'timecreated' => $time,
-            'timemodified' => $time,
-        ]);
+        $targetuserids = $userselector($context, $component, $area, $itemid, $payload);
+        if (count($targetuserids) < 1) {
+            return;
+        }
+
+        $encodedpayload = json_encode($payload ?? []);
+
+        $notifications = array_map(
+            function ($userid) use ($time, $encodedpayload, $itemid, $area, $component, $context) {
+                return [
+                    'contextid' => $context->id,
+                    'targetuser' => $userid,
+                    'component' => $component,
+                    'area' => $area,
+                    'itemid' => $itemid,
+                    'payload' => $encodedpayload,
+                    'timecreated' => $time,
+                    'timemodified' => $time,
+                ];
+            }, $targetuserids);
+
+        $DB->insert_records(self::TABLENAME, $notifications);
     }
 
     /**
@@ -145,7 +165,7 @@ class plugin extends plugin_base {
      */
     public static function validate_token(int $userid, string $token) {
         global $DB;
-        $sessions = \core\session\manager::get_sessions_by_userid($userid);
+        $sessions = $DB->get_records('sessions', ['userid' => $userid]);
         foreach ($sessions as $session) {
             if (self::get_token_for_user($userid, $session->sid) === $token) {
                 return true;
@@ -157,50 +177,32 @@ class plugin extends plugin_base {
     /**
      * Get all notifications for a given user
      *
-     * @param int $contextidentifier
+     * @param int $userid
      * @param int $fromid
-     * @param string $component
-     * @param string $area
-     * @param int $itemid
-     * @param float $fromtimestamp
+     * @param int $fromtimestamp
      * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
      */
-    public function get_all(int $contextidentifier,
-                            int $fromid, string $component,
-                            string $area, int $itemid,
-                            float $fromtimestamp): array {
+    public function get_all(int $userid, int $fromid, int $fromtimestamp): array {
         global $DB;
         $events = [];
-        $fromtimestampseconds = floor($fromtimestamp / 1000);
-        if ($fromid == 0) {
+        if ($fromid == -1) {
             $events = $DB->get_records_select(self::TABLENAME,
-                'contextid = :contextid
-               AND timecreated > :fromtimestamp
-               AND component = :component
-               AND area = :area
-               AND itemid = :itemid',
+                'targetuser = :userid
+               AND timecreated > :fromtimestamp',
                 [
-                    'contextid' => $contextidentifier,
-                    'fromid' => $fromid,
-                    'component' => $component,
-                    'area' => $area,
-                    'itemid' => $itemid,
-                    'fromtimestamp' => $fromtimestampseconds,
+                    'userid' => $userid,
+                    'fromtimestamp' => $fromtimestamp,
                 ],
-                'id', 'id, contextid, component, area, itemid, payload');
+            'id', 'id, contextid, component, area, itemid, payload');
         } else {
             $events = $DB->get_records_select(self::TABLENAME,
-                'contextid = :contextid
-               AND id > :fromid
-               AND component = :component
-               AND area = :area
-               AND itemid = :itemid',
+                'targetuser = :userid
+               AND id > :fromid',
                 [
-                    'contextid' => $contextidentifier,
+                    'userid' => $userid,
                     'fromid' => $fromid,
-                    'component' => $component,
-                    'area' => $area,
-                    'itemid' => $itemid,
                 ],
                 'id', 'id, contextid, component, area, itemid, payload');
         }

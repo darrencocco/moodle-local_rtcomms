@@ -16,14 +16,16 @@ Subscribe in PHP:
 ```
 Listen in Javascript:
 ```
-require(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents) {
-    PubSub.subscribe(RealTimeEvents.EVENT, function(eventData) {
-        // access context, component, area, itemid, payload as keys in event data
-        // example for context
-        document.write(eventData['context']);
-        // access payload by key
-        document.write(eventData['payload']['testkey']);
-    });
+require(['core/pubsub', 'tool_realtime/api'], function(PubSub, RealtimeApi) {
+    PubSub.subscribe(RealtimeApi.channelName(context, component, area, itemid),
+        function(eventData) {
+            // access context, component, area, itemid, payload as keys in event data
+            // example for context
+            document.write(eventData['context']);
+            // access payload by key
+            document.write(eventData['payload']['testkey']);
+        }
+    );
 });
 ```
 OR
@@ -35,8 +37,7 @@ tool_realtime\api::init();
 then in Javascript subscribe using:
 ```
 require(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents, api) {
-    api.subscribe(context, component, area, itemid);
-    PubSub.subscribe(RealTimeEvents.EVENT, function(eventData) {
+    api.subscribe(context, component, area, itemid, function(eventData) {
         // access context, component, area, itemid, payload as keys in event data
         // example for context
         document.write(eventData['context']);
@@ -45,14 +46,5 @@ require(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(P
     });
 });
 ```
-### Other uses ###
-
-Check if area is enabled in PHP:
-```
-if (\tool_realtime\api::is_enabled($component, $area)) {
-    // ...
-}
-```
-
 
 TODO: Connection lost JS event, change the favicon, etc.

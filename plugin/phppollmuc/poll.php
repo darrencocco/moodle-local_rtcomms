@@ -18,9 +18,8 @@
  * Poll for updates.
  *
  * @package     realtimeplugin_phppollmuc
- * @copyright   2020 Marina Glancy
+ * @copyright   2024 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
 
 define('AJAX_SCRIPT', true);
@@ -30,24 +29,12 @@ require_once(__DIR__ . '/../../../../../config.php');
 
 // We do not want to call require_login() here because we don't want to update 'lastaccess' and keep session alive.
 // Last event id seen.
-$fromid = optional_param('fromid', 0, PARAM_INT);
+$fromid = optional_param('fromid', -1, PARAM_INT); // FIXME: Might deprecate this.
 // Last event id seen.
 
 // Who is the current user making request.
-$userid = optional_param('userid', 0, PARAM_INT);
-$token = optional_param('token', '', PARAM_RAW);
-// Explode parameter strings.
-$paramarray = explode(':', optional_param('channel', '', PARAM_RAW));
-$contextunprocessed = $paramarray[0];
-$context = explode('-', $contextunprocessed);
-$componentunprocessed = $paramarray[1];
-$component = explode('-', $componentunprocessed);
-$areaunprocessed = $paramarray[2];
-$area = explode('-', $areaunprocessed);
-$itemidunprocessed = $paramarray[3];
-$itemid = explode('-', $itemidunprocessed);
-$fromtimestamp = $paramarray[4];
-$fromtimestampprocessed = explode('-', $fromtimestamp);
+$userid = required_param('userid', PARAM_INT);
+$token = required_param('token', PARAM_RAW);
 
 if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppollmuc') {
     echo json_encode(['error' => 'Plugin is not enabled']);
@@ -55,6 +42,7 @@ if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppollmuc') {
 }
 
 core_php_time_limit::raise();
+// TODO: might be able to reduce overhead by use the HR Time functionality as we don't need absolute time.
 $starttime = microtime(true);
 /** @var realtimeplugin_phppollmuc\plugin $plugin */
 $plugin = \tool_realtime\manager::get_plugin();
@@ -71,17 +59,11 @@ while (true) {
         exit;
     }
 
-    //TODO: check user rights to subscribe to channel.
+    $events = $plugin->get_all($userid);
 
-    for ($x = 0; $x < count($component); $x++) {
-        if ($events = $plugin->get_all((intval($context[$x])), (int)$fromid, (string)$component[$x],
-            (string)$area[$x], (int)$itemid[$x], (float)$fromtimestampprocessed[$x])) {
-            // We have some notifications for this user - return them. The JS will then create a new request.
-            echo json_encode(['success' => 1, 'events' => array_values($events)]);
-        }
-        if (count($events) > 0) {
-            exit;
-        }
+    if (count($events) > 0) {
+        echo json_encode(['success' => 1, 'events' => array_values($events)]);
+        exit;
     }
 
     // Nothing new for this user. Sleep and check again.
@@ -89,7 +71,6 @@ while (true) {
         echo json_encode(['success' => 1, 'events' => []]);
         exit;
     }
-    error_log("Cycle: $counter, User: $userid, Time: " . microtime());
     $counter++;
     usleep($sleepinterval);
 }

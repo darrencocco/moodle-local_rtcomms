@@ -24,7 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/** @var stdClass $plugin */
 $plugin->component = 'realtimeplugin_phppoll';
-$plugin->release = '1.0';
-$plugin->version = 2022030700;
-$plugin->requires = 2019052000;
+$plugin->release = '2.0';
+$plugin->maturity = MATURITY_BETA;
+$plugin->version = 20240071300;
+$plugin->requires = 2022081800;

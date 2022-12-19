@@ -17,10 +17,9 @@
 /**
  * Poll for updates.
  *
- * @package     realtimeplugin_phppoll
- * @copyright   2020 Marina Glancy
+ * @package     realtimeplugin_phppollmuc
+ * @copyright   2024 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
 
 define('AJAX_SCRIPT', true);
@@ -29,39 +28,69 @@ define('NO_MOODLE_COOKIES', true);
 require_once(__DIR__ . '/../../../../../config.php');
 
 // We do not want to call require_login() here because we don't want to update 'lastaccess' and keep session alive.
-// Last event id seen.
-$fromid = optional_param('fromid', 0, PARAM_INT);
-// Last event id seen.
 
 // Who is the current user making request.
-$userid = optional_param('userid', 0, PARAM_INT);
-$token = optional_param('token', '', PARAM_RAW);
-// Explode parameter strings.
-$paramarray = explode(':', optional_param('channel', '', PARAM_RAW));
-$contextunprocessed = $paramarray[0];
-$context = explode('-', $contextunprocessed);
-$componentunprocessed = $paramarray[1];
-$component = explode('-', $componentunprocessed);
-$areaunprocessed = $paramarray[2];
-$area = explode('-', $areaunprocessed);
-$itemidunprocessed = $paramarray[3];
-$itemid = explode('-', $itemidunprocessed);
-$fromtimestamp = $paramarray[4];
-$fromtimestampprocessed = explode('-', $fromtimestamp);
+$userid = required_param('userid', PARAM_INT);
+$token = required_param('token', PARAM_RAW);
+
+$lastidseen = optional_param('lastidseen', -1, PARAM_INT);
+$since = optional_param('since', -1, PARAM_INT);
 
 if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppoll') {
     echo json_encode(['error' => 'Plugin is not enabled']);
     exit;
 }
 
-core_php_time_limit::raise();
-$starttime = microtime(true);
-/** @var realtimeplugin_phppoll\plugin $plugin */
-$plugin = \tool_realtime\manager::get_plugin();
-$maxduration = $plugin->get_request_timeout(); // In seconds as float.
-$sleepinterval = $plugin->get_delay_between_checks() * 1000; // In microseconds.
+if ($lastidseen === -1 && $since === -1) {
+    // TODO: Throw a required param like exception as one of the two must be defined.
+}
 
-while (true) {
+$polltype = get_config('realtimeplugin_phppoll', 'polltype');
+
+if ($polltype == 'short') {
+    shortpoll($userid, $token, $lastidseen, $since);
+} elseif ($polltype == 'long') {
+    longpoll($userid, $token, $lastidseen, $since);
+} else {
+    echo "wat? $polltype";
+}
+
+
+function longpoll($userid, $token, $lastidseen, $since) {
+    core_php_time_limit::raise();
+    $starttime = microtime(true);
+    /** @var realtimeplugin_phppoll\plugin $plugin */
+    $plugin = \tool_realtime\manager::get_plugin();
+    $maxduration = $plugin->get_request_timeout(); // In seconds as float.
+    $sleepinterval = $plugin->get_delay_between_checks() * 1000; // In microseconds.
+
+    while (true) {
+        if (!$plugin->validate_token($userid, $token)) {
+            // User is no longer logged in or token is wrong. Do not poll any more.
+            // We check this in a loop because user session may end while we are still waiting.
+            echo json_encode(['error' => 'Can not find an active user session']);
+            exit;
+        }
+
+        $events = $plugin->get_all($userid, $lastidseen, $since);
+
+        if (count($events) > 0) {
+            echo json_encode(['success' => 1, 'events' => array_values($events)]);
+            exit;
+        }
+
+        // Nothing new for this user. Sleep and check again.
+        if (microtime(true) - $starttime > $maxduration) {
+            echo json_encode(['success' => 1, 'events' => []]);
+            exit;
+        }
+        usleep($sleepinterval);
+    }
+}
+
+function shortpoll($userid, $token, $lastidseen, $since) {
+    /** @var realtimeplugin_phppoll\plugin $plugin */
+    $plugin = \tool_realtime\manager::get_plugin();
     if (!$plugin->validate_token($userid, $token)) {
         // User is no longer logged in or token is wrong. Do not poll any more.
         // We check this in a loop because user session may end while we are still waiting.
@@ -69,23 +98,13 @@ while (true) {
         exit;
     }
 
-    //TODO: check user rights to subscribe to channel.
+    $events = $plugin->get_all($userid, $lastidseen, $since);
 
-    for ($x = 0; $x < count($component); $x++) {
-        if ($events = $plugin->get_all((intval($context[$x])), (int)$fromid, (string)$component[$x],
-            (string)$area[$x], (int)$itemid[$x], (float)$fromtimestampprocessed[$x])) {
-            // We have some notifications for this user - return them. The JS will then create a new request.
-            echo json_encode(['success' => 1, 'events' => array_values($events)]);
-        }
-        if (count($events) > 0) {
-            exit;
-        }
-    }
-
-    // Nothing new for this user. Sleep and check again.
-    if (microtime(true) - $starttime > $maxduration) {
-        echo json_encode(['success' => 1, 'events' => []]);
+    if (count($events) > 0) {
+        echo json_encode(['success' => 1, 'events' => array_values($events)]);
         exit;
     }
-    usleep($sleepinterval);
+
+    echo json_encode(['success' => 1, 'events' => []]);
+    exit;
 }

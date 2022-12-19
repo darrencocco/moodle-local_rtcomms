@@ -32,6 +32,20 @@ if ($hassiteconfig) {
 
     $settings->add(new admin_setting_configtext('realtimeplugin_phppoll/checkinterval',
             new lang_string('checkinterval', 'realtimeplugin_phppoll'),
-            new lang_string('checkintervaldesc', 'realtimeplugin_phppoll', 200), 1000)
+            new lang_string('checkintervaldesc', 'realtimeplugin_phppoll', 200), 1000, PARAM_INT)
     );
+
+    $settings->add(new admin_setting_configtext('realtimeplugin_phppoll/maxfailures',
+            new lang_string('maxfailures', 'realtimeplugin_phppoll'),
+            new lang_string('maxfailuresdesc', 'realtimeplugin_phppoll'), 5, PARAM_INT)
+    );
+
+    $settings->add(new admin_setting_configselect('realtimeplugin_phppoll/polltype',
+            new lang_string('polltype', 'realtimeplugin_phppoll'),
+            new lang_string('polltypedesc', 'realtimeplugin_phppoll'),
+            'short',
+            [
+                'short' => new lang_string('shortpoll', 'realtimeplugin_phppoll'),
+                'long' => new lang_string('longpoll', 'realtimeplugin_phppoll')
+            ]));
 }
