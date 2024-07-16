@@ -26,6 +26,8 @@
 
 namespace tool_realtime;
 
+use Closure;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -71,9 +73,9 @@ class api {
      * @param int $itemid
      * @param array|null $payload
      */
-    public static function notify(\context $context, string $component, string $area, int $itemid, ?array $payload = null) {
+    public static function notify(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null) {
         if (self::is_enabled($component, $area)) {
-            manager::get_plugin()->notify($context, $component, $area, $itemid, $payload);
+            manager::get_plugin()->notify($context, $component, $area, $itemid, $userselector, $payload);
         }
     }
 

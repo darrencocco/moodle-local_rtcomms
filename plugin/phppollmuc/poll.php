@@ -18,7 +18,7 @@
  * Poll for updates.
  *
  * @package     realtimeplugin_phppollmuc
- * @copyright   2022 Darren Cocco
+ * @copyright   2024 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,27 +29,12 @@ require_once(__DIR__ . '/../../../../../config.php');
 
 // We do not want to call require_login() here because we don't want to update 'lastaccess' and keep session alive.
 // Last event id seen.
-$fromid = optional_param('fromid', 0, PARAM_INT); // FIXME: Might deprecate this.
+$fromid = optional_param('fromid', -1, PARAM_INT); // FIXME: Might deprecate this.
 // Last event id seen.
 
 // Who is the current user making request.
-$userid = optional_param('userid', 0, PARAM_INT);
-$token = optional_param('token', '', PARAM_RAW);
-// Explode parameter strings.
-$channelstrings = explode (';', optional_param('channel', '', PARAM_RAW));
-$channels = array_map(function($channelstring) {
-    $channeldefinition = explode(';', $channelstring);
-    if (count($channeldefinition) !== 5) {
-        // FIXME: needs to fail with an error message.
-    }
-    $channel = [];
-    $channel['contextid'] = clean_param($channeldefinition[0], PARAM_INT);
-    $channel['component'] = clean_param($channeldefinition[1], PARAM_ALPHA);
-    $channel['area'] = clean_param($channeldefinition[2], PARAM_ALPHA);
-    $channel['itemid'] = clean_param($channeldefinition[3], PARAM_INT);
-    $channel['fromtimestamp'] = clean_param($channeldefinition[4], PARAM_INT);
-    return $channel;
-}, $channelstrings);
+$userid = required_param('userid', PARAM_INT);
+$token = required_param('token', PARAM_RAW);
 
 if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppollmuc') {
     echo json_encode(['error' => 'Plugin is not enabled']);
@@ -57,6 +42,7 @@ if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppollmuc') {
 }
 
 core_php_time_limit::raise();
+// TODO: might be able to reduce overhead by use the HR Time functionality as we don't need absolute time.
 $starttime = microtime(true);
 /** @var realtimeplugin_phppollmuc\plugin $plugin */
 $plugin = \tool_realtime\manager::get_plugin();
@@ -73,11 +59,7 @@ while (true) {
         exit;
     }
 
-    $events = [];
-    foreach ($channels as $channel) {
-        $events += $plugin->get_all($channel['contextid'], 0, $channel['component'],
-            $channel['area'], $channel['itemid'], $channel['fromtimestamp']);
-    }
+    $events = $plugin->get_all($userid);
 
     if (count($events) > 0) {
         echo json_encode(['success' => 1, 'events' => array_values($events)]);
@@ -89,7 +71,6 @@ while (true) {
         echo json_encode(['success' => 1, 'events' => []]);
         exit;
     }
-    error_log("Cycle: $counter, User: $userid, Time: " . microtime());
     $counter++;
     usleep($sleepinterval);
 }

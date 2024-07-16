@@ -24,6 +24,8 @@
 
 namespace tool_realtime;
 
+use Closure;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -95,7 +97,8 @@ abstract class plugin_base {
      * @param string $component
      * @param string $area
      * @param int $itemid
+     * @param Closure $userselector
      * @param array|null $payload
      */
-    abstract public function notify(\context $context, string $component, string $area, int $itemid, ?array $payload = null): void;
+    abstract public function notify(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null): void;
 }
