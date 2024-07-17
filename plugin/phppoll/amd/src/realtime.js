@@ -19,20 +19,24 @@ define(['tool_realtime/api'], function(api) {
                     if (this.status === 200) {
                         try {
                             let json = JSON.parse(this.responseText);
-                            // Process results - trigger all necessary Javascript/jQuery events.
-                            // FIXME: not handling Moodle errors correctly
-                            let events = json.events;
-                            for (let i in events) {
-                                api.publish(events[i]);
-                                // Remember the last id.
-                                self.params.lastIdSeen = Number(events[i].id);
+                            if (!json.error) {
+                                // Process results - trigger all necessary Javascript/jQuery events.
+                                // FIXME: not handling Moodle errors correctly
+                                let events = json.events;
+                                for (let i in events) {
+                                    api.publish(events[i]);
+                                    // Remember the last id.
+                                    self.params.lastIdSeen = Number(events[i].id);
+                                }
+                                self.errorCounter = 0;
+                            } else {
+                                self.errorCounter++;
                             }
-                            this.errorCounter = 0;
                         } catch {
-                            this.errorCounter++;
+                            self.errorCounter++;
                         }
                     } else {
-                        this.errorCounter++;
+                        self.errorCounter++;
                     }
                     self.resetTimeout();
                     self.queueNextPoll();

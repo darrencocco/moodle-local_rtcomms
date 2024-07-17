@@ -64,7 +64,7 @@ class plugin extends plugin_base {
         $fromid = $eventtracker->get($USER->id) ?: 0;
         $fromtimestamp = microtime(true);
 
-        $PAGE->requires->js_call_amd('realtimeplugin_phppollmuc/realtime', 'subscribe',
+        $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime', 'subscribe',
             [ $context->id, $component, $area, $itemid, $fromid, $fromtimestamp]);
     }
 
@@ -78,12 +78,13 @@ class plugin extends plugin_base {
             return;
         }
         self::$initialised = true;
-        $earliestMessageCreationTime = $_SERVER['REQUEST_TIME'];
-        $maxFailures = get_config('realtimeplugin_phppollmuc', 'maxfailures');
+        $earliestmessagecreationtime = $_SERVER['REQUEST_TIME'];
+        $maxfailures = get_config('realtimeplugin_phppollmuc', 'maxfailures');
+        $polltype = get_config('realtimeplugin_phppollmuc', 'polltype');
         $url = new \moodle_url('/admin/tool/realtime/plugin/phppollmuc/poll.php');
-        $PAGE->requires->js_call_amd('realtimeplugin_phppollmuc/realtime',  'init',
-            [$USER->id, self::get_token(), $url->out(false),
-                $this->get_delay_between_checks(), $maxFailures, $earliestMessageCreationTime]);
+        $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime',  'init',
+            [$USER->id, self::get_token(), $url->out(false), $this->get_delay_between_checks(),
+                $maxfailures, $earliestmessagecreationtime, $polltype]);
     }
 
     /**
