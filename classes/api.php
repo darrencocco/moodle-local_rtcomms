@@ -50,18 +50,14 @@ class api {
      * @param int $itemid
      */
     public static function subscribe(\context $context, string $component, string $area, int $itemid) {
-        if (self::is_enabled($component, $area)) {
-            manager::get_plugin()->subscribe($context, $component, $area, $itemid);
-        }
+        manager::get_plugin()->subscribe($context, $component, $area, $itemid);
     }
 
     /**
      * SEt up realtime tool
      */
     public static function init() {
-        if (self::is_enabled('fakecomponent', 'fakearea')) {
-            manager::get_plugin()->init();
-        }
+        manager::get_plugin()->init();
     }
 
     /**
@@ -74,20 +70,6 @@ class api {
      * @param array|null $payload
      */
     public static function notify(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null) {
-        if (self::is_enabled($component, $area)) {
-            manager::get_plugin()->notify($context, $component, $area, $itemid, $userselector, $payload);
-        }
-    }
-
-    /**
-     * Checks if the given area is enabled
-     *
-     * @param string $component
-     * @param string $area
-     * @return bool
-     */
-    public static function is_enabled(string $component, string $area) {
-        // TODO.
-        return true;
+        manager::get_plugin()->notify($context, $component, $area, $itemid, $userselector, $payload);
     }
 }
