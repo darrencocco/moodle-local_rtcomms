@@ -1,7 +1,7 @@
 language: php
 
 addons:
-  postgresql: "9.6"
+  postgresql: "16"
 
 services:
   - mysql
@@ -14,11 +14,11 @@ cache:
     - $HOME/.npm
 
 php:
-  - 7.4
+  - 8.1
 
 env:
   - DB=pgsql MOODLE_BRANCH=master
-  - DB=pgsql MOODLE_BRANCH=MOODLE_39_STABLE CODECHECK=1
+  - DB=pgsql MOODLE_BRANCH=MOODLE_401_STABLE CODECHECK=1
 
 before_install:
   - phpenv config-rm xdebug.ini

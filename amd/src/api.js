@@ -2,7 +2,6 @@
  * Real time events
  *
  * @module     tool_realtime/events
- * @package    tool_realtime
  * @copyright  2020 Marina Glancy
  */
 define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents) {
@@ -31,17 +30,15 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
                 }
             }
         },
-        subscribe: function(context, component, area, itemid, fromId= 0, fromtimestamp = -1) {
-            var fromTimeStamp = fromtimestamp;
-
-            if(fromId == 0) {
-                fromTimeStamp= (new Date).getTime();
+        subscribe: function(context, component, area, itemid, callback = null, fromId= -1, fromTimestamp = -1) {
+            if(fromId == -1 && fromTimestamp == -1) {
+                fromTimestamp = (new Date).getTime();
             }
 
             // Check that plugin implementation has been set.
-            if (document.delegatedplugin) {
+            if (this.getPlugin()) {
                 //  conditional for plugin being set
-                document.delegatedplugin.subscribe(context, component, area, itemid, fromId, fromTimeStamp);
+                this.getPlugin().subscribe(context, component, area, itemid, fromId, fromTimestamp);
             } else {
                 // Channel object to store in list
                 var channel = {
@@ -50,15 +47,29 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
                     area: area,
                     itemid: itemid,
                     fromid: fromId,
-                    fromtimestamp: fromTimeStamp
+                    fromtimestamp: fromTimestamp
                 };
                 // push channel to list
                 document.listofchannels.push(channel);
             }
-
+            if (callback instanceof Function) {
+                PubSub.subscribe(this.channelName(component, component, area, itemid), callback);
+            }
         },
         getPlugin: function() {
             return document.delegatedplugin;
+        },
+
+        publish: function(message) {
+            PubSub.publish(this.channelName(message.context, message.component, message.area, message.itemid), message);
+        },
+
+        connectionFailure: function() {
+            PubSub.publish(RealTimeEvents.CONNECTION_LOST, {});
+        },
+
+        channelName: function (context, component, area, itemid) {
+            return RealTimeEvents.EVENT + '/' + component + '/' + area + '/' + itemid;
         }
     };
 });

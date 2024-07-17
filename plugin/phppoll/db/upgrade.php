@@ -16,4 +16,18 @@ function xmldb_realtimeplugin_phppoll_upgrade($oldversion)
         // Phppoll savepoint reached.
         upgrade_plugin_savepoint(true, 2022030700, 'realtimeplugin', 'phppoll');
     }
+
+    if ($oldversion < 2024071300) {
+        $table = new xmldb_table('realtimeplugin_phppoll');
+        $field = new xmldb_field('targetuser', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, false, null, 'id');
+        $index = new xmldb_index('targetuser', XMLDB_TYPE_INTEGER, ['targetuser']);
+
+        $DB->delete_records('realtimeplugin_phppoll');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+            $dbman->add_index($table, $index);
+        }
+
+        upgrade_plugin_savepoint(true, 2024071300, 'realtimeplugin', 'phppoll');
+    }
 }

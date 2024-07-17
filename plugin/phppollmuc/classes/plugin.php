@@ -13,26 +13,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- * Class realtimeplugin_phppollmuc\plugin
- *
- * @package     realtimeplugin_phppollmuc
- * @copyright   2022 Darren Cocco
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace realtimeplugin_phppollmuc;
 
 defined('MOODLE_INTERNAL') || die();
 
+use Closure;
 use tool_realtime\plugin_base;
 
 /**
  * Class realtimeplugin_phppollmuc\plugin
  *
  * @package     realtimeplugin_phppollmuc
- * @copyright   2020 Marina Glancy
+ * @copyright   2024 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plugin extends plugin_base {
@@ -41,6 +33,7 @@ class plugin extends plugin_base {
     static protected $initialised = false;
     /** @var string */
     const TABLENAME = 'realtimeplugin_phppollmuc';
+
 
     /**
      * Is the plugin setup completed
@@ -61,23 +54,17 @@ class plugin extends plugin_base {
      */
     public function subscribe(\context $context, string $component, string $area, int $itemid): void {
         // TODO check that area is defined only as letters and numbers.
-        // TODO: this should be JS with a web-service providing assistance.
-        global $PAGE, $USER, $DB;
+        global $PAGE, $USER;
         if (!$this->is_set_up() || !isloggedin() || isguestuser()) {
             return;
         }
-        self::init();
+        $this->init();
 
         $eventtracker = \cache::make('realtimeplugin_phppollmuc', 'tracker');
-        $fromid = $eventtracker->get($this->generate_cache_item_tracker($context->id, $component, $area, $itemid));
-        if ($fromid === false) {
-            $fromid = 0;
-        }
+        $fromid = $eventtracker->get($USER->id) ?: 0;
         $fromtimestamp = microtime(true);
 
-        // TODO: WTF is this  $url definition for?
-        $url = new \moodle_url('/admin/tool/realtime/plugin/phppollmuc/poll.php');
-        $PAGE->requires->js_call_amd('realtimeplugin_phppollmuc/realtime', 'subscribe',
+        $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime', 'subscribe',
             [ $context->id, $component, $area, $itemid, $fromid, $fromtimestamp]);
     }
 
@@ -86,17 +73,18 @@ class plugin extends plugin_base {
      *
      */
     public function init(): void {
-        // TODO check that area is defined only as letters and numbers.
-        // TODO: This should probably be pure JS with some backend web-services to handle things.
         global $PAGE, $USER;
         if (!$this->is_set_up() || !isloggedin() || isguestuser() || self::$initialised) {
             return;
         }
         self::$initialised = true;
+        $earliestmessagecreationtime = $_SERVER['REQUEST_TIME'];
+        $maxfailures = get_config('realtimeplugin_phppollmuc', 'maxfailures');
+        $polltype = get_config('realtimeplugin_phppollmuc', 'polltype');
         $url = new \moodle_url('/admin/tool/realtime/plugin/phppollmuc/poll.php');
-        $PAGE->requires->js_call_amd('realtimeplugin_phppollmuc/realtime',  'init',
-            [$USER->id, self::get_token(), $url->out(false),
-                $this->get_delay_between_checks()]);
+        $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime',  'init',
+            [$USER->id, self::get_token(), $url->out(false), $this->get_delay_between_checks(),
+                $maxfailures, $earliestmessagecreationtime, $polltype]);
     }
 
     /**
@@ -106,9 +94,10 @@ class plugin extends plugin_base {
      * @param string $component
      * @param string $area
      * @param int $itemid
+     * @param Closure $userselector
      * @param array|null $payload
      */
-    public function notify(\context $context, string $component, string $area, int $itemid, ?array $payload = null): void {
+    public function notify(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null): void {
         $time = time();
         $data = [
             'contextid' => $context->id,
@@ -119,26 +108,32 @@ class plugin extends plugin_base {
             'timecreated' => $time
         ];
 
-        $lastwrittentracker = $this->generate_cache_item_tracker($context->id, $component, $area, $itemid);
+        $targetuserids = $userselector($context, $component, $area, $itemid, $payload);
 
-        // TODO: Cache definition.
-        $eventcache = \cache::make('realtimeplugin_phppollmuc', 'events');
-        $eventtracker = \cache::make('realtimeplugin_phppollmuc', 'tracker');
+        if (count($targetuserids) < 1) {
+            return;
+        }
 
-        // Only one notification can be written at a time, gated by this cache element.
-        $eventtracker->acquire_lock($lastwrittentracker);
+        $mucinterface = muc::get_instance();
 
-        // Work out what the key will be for this event.
-        $lastwrittenid = $eventtracker->get($lastwrittentracker);
-        $nextkey = $this->generate_cache_item_id($lastwrittenid + 1, $context->id, $component, $area, $itemid);
-        $data['index'] = $lastwrittenid + 1;
+        $failedtowrite = [];
 
-        // Write the data.
-        $eventcache->set($nextkey, $data);
-        $eventtracker->set($lastwrittentracker, $lastwrittenid + 1);
+        foreach ($targetuserids as $targetuserid) {
+            if (!$mucinterface->write_event($data, $targetuserid)) {
+                $failedtowrite[] = $targetuserid;
+            }
+        }
 
-        // Release the write lock on this notifications store.
-        $eventtracker->release_lock($lastwrittentracker);
+        if (count($failedtowrite) > 0) {
+            $doublefailed = [];
+            usleep(100);
+            foreach($failedtowrite as $targetuserid) {
+                if (!$mucinterface->write_event($data, $targetuserid)) {
+                    $doublefailed[] = $targetuserid;
+                }
+            }
+            // TODO: write out all double failed as error messages.
+        }
     }
 
     /**
@@ -170,9 +165,9 @@ class plugin extends plugin_base {
      * @param string $token
      * @return bool
      */
-    public static function validate_token(int $userid, string $token) {
+    public function validate_token(int $userid, string $token) {
         global $DB;
-        $sessions = $DB->get_records('sessions', ['userid' => $userid]);
+        $sessions = \core\session\manager::get_sessions_by_userid($userid);
         foreach ($sessions as $session) {
             if (self::get_token_for_user($userid, $session->sid) === $token) {
                 return true;
@@ -184,75 +179,13 @@ class plugin extends plugin_base {
     /**
      * Get all notifications for a given user
      *
-     * @param int $contextidentifier
-     * @param int $fromid
-     * @param string $component
-     * @param string $area
-     * @param int $itemid
-     * @param float $fromtimestamp
+     * @param int $userid
+     * @param int $fromindex
+     * @param int $fromtimestamp
      * @return array
      */
-    public function get_all(int $contextidentifier,
-                            int $fromindex, string $component,
-                            string $area, int $itemid,
-                            float $fromtimestamp): array {
-        $eventcache = \cache::make('realtimeplugin_phppollmuc', 'events');
-
-        $ids = $this->ids_for_retrieval($fromindex, $contextidentifier, $component, $area, $itemid);
-
-        $events = [];
-        $fromtimestampseconds = floor($fromtimestamp / 1000);
-
-        $events = $eventcache->get_many($ids);
-
-        $events = array_filter($events, function($event)  use ($fromtimestampseconds) {
-            return $event !== false &&
-                $event["timecreated"] > $fromtimestampseconds;
-        });
-        array_walk($events, function(&$item) {
-            $context = \context::instance_by_id($item["contextid"]);
-            $item["context"] = ['id' => $context->id, 'contextlevel' => $context->contextlevel,
-                'instanceid' => $context->instanceid];
-            unset($item["contextid"]);
-        });
-        return $events;
-    }
-
-    protected function generate_cache_item_id($index, $contextid, $component, $area, $itemid) {
-        return "$contextid-$component-$area-$itemid-$index";
-    }
-
-    protected function generate_cache_item_tracker($contextid, $component, $area, $itemid) {
-        return "$contextid-$component-$area-$itemid-lastwrittenindex";
-    }
-
-    protected function index_range_from_last_written($lastwrittenindex) {
-        $before = 200;
-        $after = 10;
-        $min = $lastwrittenindex > $before ? $lastwrittenindex - $before : 0;
-        $max = $lastwrittenindex + $after;
-        return range($min, $max);
-    }
-
-    protected function index_range_from_last_seen($lastseenindex) {
-        $after = 100;
-        $min = $lastseenindex + 1;
-        $max = $lastseenindex + $after;
-        return range($min, $max);
-    }
-
-    protected function ids_for_retrieval($index, $contextid, $component, $area, $itemid) {
-        if ($index > 0) {
-            $range = $this->index_range_from_last_seen($index);
-        } else {
-            // TODO: cache definition
-            $eventtracker = \cache::make('realtimeplugin_phppollmuc', 'tracker');
-            $lastwritten = $eventtracker->get($this->generate_cache_item_tracker($contextid, $component, $area, $itemid));
-            $range = $this->index_range_from_last_written($lastwritten);
-        }
-        return array_map(function ($index) use ($contextid, $component, $area, $itemid) {
-            return $this->generate_cache_item_id($index, $contextid, $component, $area, $itemid);
-        }, $range);
+    public function get_all(int $userid, int $fromindex, int $fromtimestamp): array {
+        return muc::class->get_all($userid, $fromindex, $fromtimestamp);
     }
 
     /**

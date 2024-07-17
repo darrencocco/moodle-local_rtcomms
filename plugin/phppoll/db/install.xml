@@ -7,6 +7,7 @@
     <TABLE NAME="realtimeplugin_phppoll" COMMENT="">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="targetuser" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="contextid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="component" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="area" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
@@ -20,6 +21,7 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="timecreated" UNIQUE="false" FIELDS="timecreated"/>
+        <INDEX NAME="targetuser" UNIQUE="false" FIELDS="targetuser"/>
       </INDEXES>
     </TABLE>
   </TABLES>
