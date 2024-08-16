@@ -66,7 +66,7 @@ class plugin extends plugin_base {
         if (!$this->is_set_up() || !isloggedin() || isguestuser()) {
             return;
         }
-        self::init();
+        $this->init();
         $fromtimestamp = microtime(true);
         $PAGE->requires->js_call_amd('tool_realtime/api', 'subscribe',
             [ $context->id, $component, $area, $itemid, -1, -1]);
@@ -77,8 +77,7 @@ class plugin extends plugin_base {
      *
      */
     public function init(): void {
-        // TODO check that area is defined only as letters and numbers.
-        global $PAGE, $USER;
+        // TODO check that area is defined only as letters and numbers.;
         if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppoll') {
             throw new \coding_exception("Attempted to initialise a realtime plugin that is not enabled.");
         }
@@ -86,6 +85,12 @@ class plugin extends plugin_base {
             return;
         }
         self::$initialised = true;
+
+        $this->init_js();
+    }
+
+    protected function init_js(): void {
+        global $PAGE, $USER;
         $earliestmessagecreationtime = $_SERVER['REQUEST_TIME'];
         $maxfailures = get_config('realtimeplugin_phppoll', 'maxfailures');
         $polltype = get_config('realtimeplugin_phppoll', 'polltype');
