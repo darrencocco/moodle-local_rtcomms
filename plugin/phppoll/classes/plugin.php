@@ -15,14 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Class realtimeplugin_phppoll\plugin
+ * Class rtcomms_phppoll\plugin
  *
- * @package     realtimeplugin_phppoll
+ * @package     rtcomms_phppoll
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace realtimeplugin_phppoll;
+namespace rtcomms_phppoll;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -30,9 +30,9 @@ use Closure;
 use tool_realtime\plugin_base;
 
 /**
- * Class realtimeplugin_phppoll\plugin
+ * Class rtcomms_phppoll\plugin
  *
- * @package     realtimeplugin_phppoll
+ * @package     rtcomms_phppoll
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -41,7 +41,7 @@ class plugin extends plugin_base {
     /** @var bool */
     static protected $initialised = false;
     /** @var string */
-    const TABLENAME = 'realtimeplugin_phppoll';
+    const TABLENAME = 'rtcomms_phppoll';
 
     /**
      * Is the plugin setup completed
@@ -66,7 +66,7 @@ class plugin extends plugin_base {
         if (!$this->is_set_up() || !isloggedin() || isguestuser()) {
             return;
         }
-        self::init();
+        $this->init();
         $fromtimestamp = microtime(true);
         $PAGE->requires->js_call_amd('tool_realtime/api', 'subscribe',
             [ $context->id, $component, $area, $itemid, -1, -1]);
@@ -77,8 +77,7 @@ class plugin extends plugin_base {
      *
      */
     public function init(): void {
-        // TODO check that area is defined only as letters and numbers.
-        global $PAGE, $USER;
+        // TODO check that area is defined only as letters and numbers.;
         if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppoll') {
             throw new \coding_exception("Attempted to initialise a realtime plugin that is not enabled.");
         }
@@ -86,11 +85,17 @@ class plugin extends plugin_base {
             return;
         }
         self::$initialised = true;
+
+        $this->init_js();
+    }
+
+    protected function init_js(): void {
+        global $PAGE, $USER;
         $earliestmessagecreationtime = $_SERVER['REQUEST_TIME'];
-        $maxfailures = get_config('realtimeplugin_phppoll', 'maxfailures');
-        $polltype = get_config('realtimeplugin_phppoll', 'polltype');
+        $maxfailures = get_config('rtcomms_phppoll', 'maxfailures');
+        $polltype = get_config('rtcomms_phppoll', 'polltype');
         $url = new \moodle_url('/admin/tool/realtime/plugin/phppoll/poll.php');
-        $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime',  'init',
+        $PAGE->requires->js_call_amd('rtcomms_phppoll/realtime',  'init',
             [$USER->id, self::get_token(), $url->out(false), $this->get_delay_between_checks(),
                 $maxfailures, $earliestmessagecreationtime, $polltype]);
     }
@@ -223,7 +228,7 @@ class plugin extends plugin_base {
      * @return int sleep time between checks, in milliseconds
      */
     public function get_delay_between_checks(): int {
-        $period = get_config('realtimeplugin_phppoll', 'checkinterval');
+        $period = get_config('rtcomms_phppoll', 'checkinterval');
         return max($period, 200);
     }
 
@@ -233,7 +238,7 @@ class plugin extends plugin_base {
      * @return int time in seconds
      */
     public function get_request_timeout(): float {
-        $duration = get_config('realtimeplugin_phppoll', 'requesttimeout');
+        $duration = get_config('rtcomms_phppoll', 'requesttimeout');
         return (isset($duration) && $duration !== false) ? (float)$duration : 30;
     }
 }

@@ -17,7 +17,7 @@
 /**
  * Plugin administration pages are defined here.
  *
- * @package     realtimeplugin_phppoll
+ * @package     rtcomms_phppoll
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,27 +25,27 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $settings->add(new admin_setting_configduration('realtimeplugin_phppoll/requesttimeout',
-            new lang_string('requesttimeout', 'realtimeplugin_phppoll'),
-            new lang_string('requesttimeoutdesc', 'realtimeplugin_phppoll'), 30)
+    $settings->add(new admin_setting_configduration('rtcomms_phppoll/requesttimeout',
+            new lang_string('requesttimeout', 'rtcomms_phppoll'),
+            new lang_string('requesttimeoutdesc', 'rtcomms_phppoll'), 30)
     );
 
-    $settings->add(new admin_setting_configtext('realtimeplugin_phppoll/checkinterval',
-            new lang_string('checkinterval', 'realtimeplugin_phppoll'),
-            new lang_string('checkintervaldesc', 'realtimeplugin_phppoll', 200), 1000, PARAM_INT)
+    $settings->add(new admin_setting_configtext('rtcomms_phppoll/checkinterval',
+            new lang_string('checkinterval', 'rtcomms_phppoll'),
+            new lang_string('checkintervaldesc', 'rtcomms_phppoll', 200), 1000, PARAM_INT)
     );
 
-    $settings->add(new admin_setting_configtext('realtimeplugin_phppoll/maxfailures',
-            new lang_string('maxfailures', 'realtimeplugin_phppoll'),
-            new lang_string('maxfailuresdesc', 'realtimeplugin_phppoll'), 5, PARAM_INT)
+    $settings->add(new admin_setting_configtext('rtcomms_phppoll/maxfailures',
+            new lang_string('maxfailures', 'rtcomms_phppoll'),
+            new lang_string('maxfailuresdesc', 'rtcomms_phppoll'), 5, PARAM_INT)
     );
 
-    $settings->add(new admin_setting_configselect('realtimeplugin_phppoll/polltype',
-            new lang_string('polltype', 'realtimeplugin_phppoll'),
-            new lang_string('polltypedesc', 'realtimeplugin_phppoll'),
+    $settings->add(new admin_setting_configselect('rtcomms_phppoll/polltype',
+            new lang_string('polltype', 'rtcomms_phppoll'),
+            new lang_string('polltypedesc', 'rtcomms_phppoll'),
             'short',
             [
-                'short' => new lang_string('shortpoll', 'realtimeplugin_phppoll'),
-                'long' => new lang_string('longpoll', 'realtimeplugin_phppoll')
+                'short' => new lang_string('shortpoll', 'rtcomms_phppoll'),
+                'long' => new lang_string('longpoll', 'rtcomms_phppoll')
             ]));
 }

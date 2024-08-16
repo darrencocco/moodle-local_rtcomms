@@ -1,5 +1,5 @@
-@tool @tool_realtime @realtimeplugin @realtimeplugin_phppoll
-Feature: Testing basic functionality of realtimeplugin_phppoll
+@tool @tool_realtime @rtcomms @rtcomms_phppoll
+Feature: Testing basic functionality of rtcomms_phppoll
   In order to browse effectively
   As a user
   I need to be able to check for updates
@@ -8,8 +8,8 @@ Feature: Testing basic functionality of realtimeplugin_phppoll
   Scenario: Basic test of polling for updates
     Given the following config values are set as admin:
       | tool_realtime/enabled                 | phppoll |
-      | realtimeplugin_phppoll/requesttimeout | 5       |
-      | realtimeplugin_phppoll/checkinterval  | 200     |
+      | rtcomms_phppoll/requesttimeout | 5       |
+      | rtcomms_phppoll/checkinterval  | 200     |
     When I log in as "admin"
     And I am on realtime fixture page
     Then I wait until "Realtime plugin - phppoll" "text" exists

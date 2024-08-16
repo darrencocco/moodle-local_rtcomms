@@ -17,7 +17,7 @@
 /**
  * Poll for updates.
  *
- * @package     realtimeplugin_phppollmuc
+ * @package     rtcomms_phppollmuc
  * @copyright   2024 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -44,7 +44,7 @@ if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppollmuc') {
 core_php_time_limit::raise();
 // TODO: might be able to reduce overhead by use the HR Time functionality as we don't need absolute time.
 $starttime = microtime(true);
-/** @var realtimeplugin_phppollmuc\plugin $plugin */
+/** @var rtcomms_phppollmuc\plugin $plugin */
 $plugin = \tool_realtime\manager::get_plugin();
 $maxduration = $plugin->get_request_timeout(); // In seconds as float.
 $sleepinterval = $plugin->get_delay_between_checks() * 1000; // In microseconds.

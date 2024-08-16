@@ -17,7 +17,7 @@
 /**
  * Plugin version and other meta-data are defined here.
  *
- * @package     realtimeplugin_phppollmuc
+ * @package     rtcomms_phppollmuc
  * @copyright   2022 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,11 +25,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin */
-$plugin->component = 'realtimeplugin_phppollmuc';
+$plugin->component = 'rtcomms_phppollmuc';
 $plugin->release = '2.0';
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->version = 2024071600;
 $plugin->requires = 2022081800;
 $plugin->dependencies = [
-    'realtimeplugin_phppoll' => 20240071300,
+    'rtcomms_phppoll' => 20240071300,
 ];

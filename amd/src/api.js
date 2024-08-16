@@ -53,7 +53,7 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
                 document.listofchannels.push(channel);
             }
             if (callback instanceof Function) {
-                PubSub.subscribe(this.channelName(component, component, area, itemid), callback);
+                PubSub.subscribe(this.channelName(context, component, area, itemid), callback);
             }
         },
         getPlugin: function() {
@@ -69,7 +69,7 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
         },
 
         channelName: function (context, component, area, itemid) {
-            return RealTimeEvents.EVENT + '/' + component + '/' + area + '/' + itemid;
+            return RealTimeEvents.EVENT + '/' + context + '/' + component + '/' + area + '/' + itemid;
         }
     };
 });

@@ -17,7 +17,7 @@
 /**
  * Tasks definitions.
  *
- * @package    realtimeplugin_phppoll
+ * @package    rtcomms_phppoll
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $tasks = array(
     array(
-        'classname' => 'realtimeplugin_phppoll\task\cleanup_task',
+        'classname' => 'rtcomms_phppoll\task\cleanup_task',
         'blocking' => 0,
         'minute' => '*/5',
         'hour' => '*',

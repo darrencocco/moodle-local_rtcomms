@@ -1,7 +1,7 @@
 /**
  * Real time events
  *
- * @module     realtimeplugin_phppoll/realtime
+ * @module     rtcomms_phppoll/realtime
  * @copyright  2024 Darren Cocco
  */
 define(['tool_realtime/api'], function(api) {

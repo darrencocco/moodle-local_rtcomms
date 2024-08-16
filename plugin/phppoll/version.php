@@ -17,7 +17,7 @@
 /**
  * Plugin version and other meta-data are defined here.
  *
- * @package     realtimeplugin_phppoll
+ * @package     rtcomms_phppoll
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin */
-$plugin->component = 'realtimeplugin_phppoll';
+$plugin->component = 'rtcomms_phppoll';
 $plugin->release = '2.0';
 $plugin->maturity = MATURITY_BETA;
-$plugin->version = 20240071300;
+$plugin->version = 2024071300;
 $plugin->requires = 2022081800;

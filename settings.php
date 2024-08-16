@@ -43,8 +43,8 @@ if ($hassiteconfig) {
             \tool_realtime\manager::get_installed_plugins_menu())
     );
 
-    foreach (core_plugin_manager::instance()->get_plugins_of_type('realtimeplugin') as $plugin) {
-        /** @var \tool_realtime\plugininfo\realtimeplugin $plugin */
+    foreach (core_plugin_manager::instance()->get_plugins_of_type('rtcomms') as $plugin) {
+        /** @var \tool_realtime\plugininfo\rtcomms $plugin */
         $plugin->load_settings($ADMIN, 'realtime', $hassiteconfig);
     }
 }
