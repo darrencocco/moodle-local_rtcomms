@@ -34,27 +34,28 @@ class muc {
     }
 
 
-    public function write_event(array $data, int $targetuserid): bool{
-        $lastwrittentracker = $this->generate_cache_item_id($targetuserid);
+    public function write_event(array $data, int $targetuserid): bool {
+        $lastwrittentracker = $this->generate_cache_item_tracker($targetuserid);
         // Only one notification can be written at a time per user, gated by this cache element.
-        $locked = self::$eventtracker->acquire_lock($lastwrittentracker);
+        $locked = $this->eventtracker->acquire_lock($lastwrittentracker);
         if (!$locked) {
-            return;
+            return false;
         }
 
         // Work out what the key will be for this event.
-        $lastwrittenidnumber = self::$eventtracker->get($lastwrittentracker) ?: 0;
+        $lastwrittenidnumber = $this->eventtracker->get($lastwrittentracker) ?: 0;
         // FIXME: What happens if there is a cache miss?
         $nextidnumber = $this->get_next_id_number($lastwrittenidnumber);
         $nextkey = $this->generate_cache_item_id($targetuserid, $nextidnumber);
         $data['index'] = $nextidnumber;
 
         // Write the data.
-        self::$eventcache->set($nextkey, $data);
-        self::$eventtracker->set($lastwrittentracker, $nextidnumber);
+        $this->eventcache->set($nextkey, $data);
+        $this->eventtracker->set($lastwrittentracker, $nextidnumber);
 
         // Release the write-lock on this notifications store.
-        self::$eventtracker->release_lock($lastwrittentracker);
+        $this->eventtracker->release_lock($lastwrittentracker);
+        return true;
     }
 
     /**
@@ -145,5 +146,12 @@ class muc {
             $this->previous_n_indices($lastwrittenindex, $before),
             [$lastwrittenindex],
             $this->next_n_indices($lastwrittenindex, $after));
+    }
+
+    protected function get_next_id_number($lastwrittenidnumber) {
+        if ($lastwrittenidnumber === $this->indexmax) {
+            return $this->indexmin;
+        }
+        return $lastwrittenidnumber + 1;
     }
 }
