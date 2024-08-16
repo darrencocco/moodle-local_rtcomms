@@ -17,16 +17,16 @@
 /**
  * Task to cleanup task logs.
  *
- * @package    realtimeplugin_phppoll
+ * @package    rtcomms_phppoll
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace realtimeplugin_phppoll\task;
+namespace rtcomms_phppoll\task;
 
 defined('MOODLE_INTERNAL') || die();
 
 use core\task\scheduled_task;
-use realtimeplugin_phppoll\plugin;
+use rtcomms_phppoll\plugin;
 
 /**
  * A task to cleanup log entries for tasks.
@@ -42,7 +42,7 @@ class cleanup_task extends scheduled_task {
      * @return string
      */
     public function get_name() {
-        return get_string('taskcleanup', 'realtimeplugin_phppoll');
+        return get_string('taskcleanup', 'rtcomms_phppoll');
     }
 
     /**

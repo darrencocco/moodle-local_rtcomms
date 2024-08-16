@@ -17,7 +17,7 @@
 /**
  * Poll for updates.
  *
- * @package     realtimeplugin_phppollmuc
+ * @package     rtcomms_phppollmuc
  * @copyright   2024 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -45,7 +45,7 @@ if ($lastidseen === -1 && $since === -1) {
     // TODO: Throw a required param like exception as one of the two must be defined.
 }
 
-$polltype = get_config('realtimeplugin_phppoll', 'polltype');
+$polltype = get_config('rtcomms_phppoll', 'polltype');
 
 if ($polltype == 'short') {
     shortpoll($userid, $token, $lastidseen, $since);
@@ -59,7 +59,7 @@ if ($polltype == 'short') {
 function longpoll($userid, $token, $lastidseen, $since) {
     core_php_time_limit::raise();
     $starttime = microtime(true);
-    /** @var realtimeplugin_phppoll\plugin $plugin */
+    /** @var rtcomms_phppoll\plugin $plugin */
     $plugin = \tool_realtime\manager::get_plugin();
     $maxduration = $plugin->get_request_timeout(); // In seconds as float.
     $sleepinterval = $plugin->get_delay_between_checks() * 1000; // In microseconds.
@@ -89,7 +89,7 @@ function longpoll($userid, $token, $lastidseen, $since) {
 }
 
 function shortpoll($userid, $token, $lastidseen, $since) {
-    /** @var realtimeplugin_phppoll\plugin $plugin */
+    /** @var rtcomms_phppoll\plugin $plugin */
     $plugin = \tool_realtime\manager::get_plugin();
     if (!$plugin->validate_token($userid, $token)) {
         // User is no longer logged in or token is wrong. Do not poll any more.

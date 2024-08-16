@@ -132,7 +132,7 @@ class setting_manageplugins extends \admin_setting {
 
         foreach (manager::get_installed_plugins_menu() as $plugin => $name) {
             $fullname = manager::PLUGINTYPE . '_' . $plugin;
-            /** @var \tool_realtime\plugininfo\realtimeplugin $plugininfo */
+            /** @var \tool_realtime\plugininfo\rtcomms $plugininfo */
             $plugininfo = $pluginmanager->get_plugin_info($fullname);
             $version = get_config($fullname, 'version') ?: '';
 

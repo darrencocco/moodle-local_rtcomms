@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Privacy Subsystem implementation for realtimeplugin_phppoll.
+ * Privacy Subsystem implementation for rtcomms_phppoll.
  *
- * @package    realtimeplugin_phppoll
+ * @package    rtcomms_phppoll
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace realtimeplugin_phppoll\privacy;
+namespace rtcomms_phppoll\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Implementation of the privacy subsystem plugin provider for the realtimeplugin_phppoll
+ * Implementation of the privacy subsystem plugin provider for the rtcomms_phppoll
  *
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

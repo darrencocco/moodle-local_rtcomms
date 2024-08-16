@@ -1,12 +1,12 @@
 <?php
-namespace realtimeplugin_phppollmuc;
+namespace rtcomms_phppollmuc;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Class realtimeplugin_phppollmuc\muc
+ * Class rtcomms_phppollmuc\muc
  *
- * @package     realtimeplugin_phppollmuc
+ * @package     rtcomms_phppollmuc
  * @copyright   2024 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -22,8 +22,8 @@ class muc {
     static protected $singleton = null;
 
     protected function __construct() {
-        $this->eventcache = \cache::make('realtimeplugin_phppollmuc', 'events');
-        $this->eventtracker = \cache::make('realtimeplugin_phppollmuc', 'tracker');
+        $this->eventcache = \cache::make('rtcomms_phppollmuc', 'events');
+        $this->eventtracker = \cache::make('rtcomms_phppollmuc', 'tracker');
     }
 
     public static function get_instance() {
@@ -89,7 +89,7 @@ class muc {
         if ($index > -1) {
             $range = $this->next_n_indices($index);
         } else {
-            $eventtracker = \cache::make('realtimeplugin_phppollmuc', 'tracker');
+            $eventtracker = \cache::make('rtcomms_phppollmuc', 'tracker');
             $lastwritten = $eventtracker->get($this->generate_cache_item_tracker($userid, $index));
             $range = $this->index_range_from_last_written($lastwritten);
         }

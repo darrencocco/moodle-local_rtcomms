@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Class realtimeplugin
+ * Class rtcomms
  *
  * @package     tool_realtime
  * @copyright   2020 Marina Glancy
@@ -29,13 +29,13 @@ defined('MOODLE_INTERNAL') || die();
 use tool_realtime\manager;
 
 /**
- * Class realtimeplugin
+ * Class rtcomms
  *
  * @package     tool_realtime
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class realtimeplugin extends \core\plugininfo\base {
+class rtcomms extends \core\plugininfo\base {
 
     /**
      * Returns the information about plugin availability
@@ -58,7 +58,7 @@ class realtimeplugin extends \core\plugininfo\base {
      * @return null|string node name or null if plugin does not create settings node (default)
      */
     public function get_settings_section_name() {
-        return 'realtimeplugin' . $this->name;
+        return 'rtcomms' . $this->name;
     }
 
     /**

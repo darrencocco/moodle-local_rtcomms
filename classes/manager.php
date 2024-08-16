@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
 class manager {
 
     /** @var string */
-    const PLUGINTYPE = 'realtimeplugin';
+    const PLUGINTYPE = 'rtcomms';
 
     /**
      * List of available backend plugins

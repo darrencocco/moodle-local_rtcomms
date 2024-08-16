@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * File containing tests for realtimeplugin_phppollmuc.
+ * File containing tests for rtcomms_phppollmuc.
  *
- * @package     realtimeplugin_phppollmuc
+ * @package     rtcomms_phppollmuc
  * @category    test
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,22 +26,22 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The realtimeplugin_phppollmuc test class.
+ * The rtcomms_phppollmuc test class.
  *
- * @package    realtimeplugin_phppollmuc
+ * @package    rtcomms_phppollmuc
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class realtimeplugin_phppollmuc_testcase extends advanced_testcase {
+class rtcomms_phppollmuc_testcase extends advanced_testcase {
 
     public function test_notify_and_get_all() {
         global $USER;
         $this->resetAfterTest();
         // Enable the phppollmuc plugin.
         set_config('enabled', 'phppollmuc', 'tool_realtime');
-        /** @var \realtimeplugin_phppollmuc\plugin $plugin */
+        /** @var \rtcomms_phppollmuc\plugin $plugin */
         $plugin = \tool_realtime\manager::get_plugin();
-        $this->assertInstanceOf(realtimeplugin_phppollmuc\plugin::class, $plugin);
+        $this->assertInstanceOf(rtcomms_phppollmuc\plugin::class, $plugin);
         $this->setAdminUser();
         $context = context_user::instance($USER->id);
         $plugin->subscribe($context, 'testcomponent', 'testarea', 7);

@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-namespace realtimeplugin_phppollmuc;
+namespace rtcomms_phppollmuc;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -21,9 +21,9 @@ use Closure;
 use tool_realtime\plugin_base;
 
 /**
- * Class realtimeplugin_phppollmuc\plugin
+ * Class rtcomms_phppollmuc\plugin
  *
- * @package     realtimeplugin_phppollmuc
+ * @package     rtcomms_phppollmuc
  * @copyright   2024 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,7 +32,7 @@ class plugin extends plugin_base {
     /** @var bool */
     static protected $initialised = false;
     /** @var string */
-    const TABLENAME = 'realtimeplugin_phppollmuc';
+    const TABLENAME = 'rtcomms_phppollmuc';
 
 
     /**
@@ -60,11 +60,11 @@ class plugin extends plugin_base {
         }
         $this->init();
 
-        $eventtracker = \cache::make('realtimeplugin_phppollmuc', 'tracker');
+        $eventtracker = \cache::make('rtcomms_phppollmuc', 'tracker');
         $fromid = $eventtracker->get($USER->id) ?: 0;
         $fromtimestamp = microtime(true);
 
-        $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime', 'subscribe',
+        $PAGE->requires->js_call_amd('rtcomms_phppoll/realtime', 'subscribe',
             [ $context->id, $component, $area, $itemid, $fromid, $fromtimestamp]);
     }
 
@@ -79,10 +79,10 @@ class plugin extends plugin_base {
         }
         self::$initialised = true;
         $earliestmessagecreationtime = $_SERVER['REQUEST_TIME'];
-        $maxfailures = get_config('realtimeplugin_phppollmuc', 'maxfailures');
-        $polltype = get_config('realtimeplugin_phppollmuc', 'polltype');
+        $maxfailures = get_config('rtcomms_phppollmuc', 'maxfailures');
+        $polltype = get_config('rtcomms_phppollmuc', 'polltype');
         $url = new \moodle_url('/admin/tool/realtime/plugin/phppollmuc/poll.php');
-        $PAGE->requires->js_call_amd('realtimeplugin_phppoll/realtime',  'init',
+        $PAGE->requires->js_call_amd('rtcomms_phppoll/realtime',  'init',
             [$USER->id, self::get_token(), $url->out(false), $this->get_delay_between_checks(),
                 $maxfailures, $earliestmessagecreationtime, $polltype]);
     }
@@ -194,7 +194,7 @@ class plugin extends plugin_base {
      * @return int sleep time between checks, in milliseconds
      */
     public function get_delay_between_checks(): int {
-        $period = get_config('realtimeplugin_phppollmuc', 'checkinterval');
+        $period = get_config('rtcomms_phppollmuc', 'checkinterval');
         return max($period, 200);
     }
 
@@ -204,7 +204,7 @@ class plugin extends plugin_base {
      * @return int time in seconds
      */
     public function get_request_timeout(): float {
-        $duration = get_config('realtimeplugin_phppollmuc', 'requesttimeout');
+        $duration = get_config('rtcomms_phppollmuc', 'requesttimeout');
         return (isset($duration) && $duration !== false) ? (float)$duration : 30;
     }
 }

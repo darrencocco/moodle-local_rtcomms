@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * File containing tests for realtimeplugin_phppoll.
+ * File containing tests for rtcomms_phppoll.
  *
- * @package     realtimeplugin_phppoll
+ * @package     rtcomms_phppoll
  * @category    test
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,20 +26,20 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The realtimeplugin_phppoll test class.
+ * The rtcomms_phppoll test class.
  *
- * @package    realtimeplugin_phppoll
+ * @package    rtcomms_phppoll
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class realtimeplugin_phppoll_testcase extends advanced_testcase {
+class rtcomms_phppoll_testcase extends advanced_testcase {
 
     public function test_notify_and_get_all() {
         global $USER;
         $this->resetAfterTest();
-        /** @var \realtimeplugin_phppoll\plugin $plugin */
+        /** @var \rtcomms_phppoll\plugin $plugin */
         $plugin = \tool_realtime\manager::get_plugin();
-        $this->assertInstanceOf(realtimeplugin_phppoll\plugin::class, $plugin);
+        $this->assertInstanceOf(rtcomms_phppoll\plugin::class, $plugin);
         $this->setAdminUser();
         $context = context_user::instance($USER->id);
         $plugin->subscribe($context, 'testcomponent', 'testarea', 7);

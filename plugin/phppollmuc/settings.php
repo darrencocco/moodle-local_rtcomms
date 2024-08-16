@@ -17,7 +17,7 @@
 /**
  * Plugin administration pages are defined here.
  *
- * @package     realtimeplugin_phppollmuc
+ * @package     rtcomms_phppollmuc
  * @copyright   2024 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,27 +25,27 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $settings->add(new admin_setting_configduration('realtimeplugin_phppollmuc/requesttimeout',
-            new lang_string('requesttimeout', 'realtimeplugin_phppollmuc'),
-            new lang_string('requesttimeoutdesc', 'realtimeplugin_phppollmuc'), 30)
+    $settings->add(new admin_setting_configduration('rtcomms_phppollmuc/requesttimeout',
+            new lang_string('requesttimeout', 'rtcomms_phppollmuc'),
+            new lang_string('requesttimeoutdesc', 'rtcomms_phppollmuc'), 30)
     );
 
-    $settings->add(new admin_setting_configtext('realtimeplugin_phppollmuc/checkinterval',
-            new lang_string('checkinterval', 'realtimeplugin_phppollmuc'),
-            new lang_string('checkintervaldesc', 'realtimeplugin_phppollmuc', 200), 1000, PARAM_INT)
+    $settings->add(new admin_setting_configtext('rtcomms_phppollmuc/checkinterval',
+            new lang_string('checkinterval', 'rtcomms_phppollmuc'),
+            new lang_string('checkintervaldesc', 'rtcomms_phppollmuc', 200), 1000, PARAM_INT)
     );
 
-    $settings->add(new admin_setting_configtext('realtimeplugin_phppollmuc/maxfailures',
-            new lang_string('maxfailures', 'realtimeplugin_phppollmuc'),
-            new lang_string('maxfailuresdesc', 'realtimeplugin_phppollmuc'), 5, PARAM_INT)
+    $settings->add(new admin_setting_configtext('rtcomms_phppollmuc/maxfailures',
+            new lang_string('maxfailures', 'rtcomms_phppollmuc'),
+            new lang_string('maxfailuresdesc', 'rtcomms_phppollmuc'), 5, PARAM_INT)
     );
 
-    $settings->add(new admin_setting_configselect('realtimeplugin_phppollmuc/polltype',
-        new lang_string('polltype', 'realtimeplugin_phppollmuc'),
-        new lang_string('polltypedesc', 'realtimeplugin_phppollmuc'),
+    $settings->add(new admin_setting_configselect('rtcomms_phppollmuc/polltype',
+        new lang_string('polltype', 'rtcomms_phppollmuc'),
+        new lang_string('polltypedesc', 'rtcomms_phppollmuc'),
         'short',
         [
-            'short' => new lang_string('shortpoll', 'realtimeplugin_phppollmuc'),
-            'long' => new lang_string('longpoll', 'realtimeplugin_phppollmuc')
+            'short' => new lang_string('shortpoll', 'rtcomms_phppollmuc'),
+            'long' => new lang_string('longpoll', 'rtcomms_phppollmuc')
         ]));
 }
