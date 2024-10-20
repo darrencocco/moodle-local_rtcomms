@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use Closure;
 use tool_realtime\plugin_base;
+use get_config;
 
 /**
  * Class rtcomms_phppoll\plugin
@@ -42,6 +43,15 @@ class plugin extends plugin_base {
     static protected $initialised = false;
     /** @var string */
     const TABLENAME = 'rtcomms_phppoll';
+    static protected $pluginname;
+    protected $poll;
+    protected $token;
+
+    public function __construct() {
+        self::$pluginname = 'phppoll';
+        $this->token = new token();
+        $this->poll = new poll($this->token, self::TABLENAME);
+    }
 
     /**
      * Is the plugin setup completed
@@ -78,7 +88,7 @@ class plugin extends plugin_base {
      */
     public function init(): void {
         // TODO check that area is defined only as letters and numbers.;
-        if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppoll') {
+        if (\tool_realtime\manager::get_enabled_plugin_name() !== self::$pluginname) {
             throw new \coding_exception("Attempted to initialise a realtime plugin that is not enabled.");
         }
         if (!$this->is_set_up() || !isloggedin() || isguestuser() || self::$initialised) {
@@ -95,9 +105,15 @@ class plugin extends plugin_base {
         $maxfailures = get_config('rtcomms_phppoll', 'maxfailures');
         $polltype = get_config('rtcomms_phppoll', 'polltype');
         $url = new \moodle_url('/admin/tool/realtime/plugin/phppoll/poll.php');
-        $PAGE->requires->js_call_amd('rtcomms_phppoll/realtime',  'init',
-            [$USER->id, self::get_token(), $url->out(false), $this->get_delay_between_checks(),
-                $maxfailures, $earliestmessagecreationtime, $polltype]);
+        $PAGE->requires->js_call_amd('rtcomms_phppoll/realtime',  'init', [[
+                "userId" => $USER->id,
+                "token" => $this->token::get_token(),
+                "pollURLParam" => $url->out(false),
+                "maxDelay" => $this->poll->get_delay_between_checks(),
+                "maxFailures" => $maxfailures,
+                "earliestMessageCreationTime" => $earliestmessagecreationtime,
+                "pollType" => $polltype,
+            ]]);
     }
 
     /**
@@ -139,106 +155,7 @@ class plugin extends plugin_base {
         $DB->insert_records(self::TABLENAME, $notifications);
     }
 
-    /**
-     * Get token for current user and current session
-     *
-     * @return string
-     */
-    public static function get_token() {
-        global $USER;
-        $sid = session_id();
-        return self::get_token_for_user($USER->id, $sid);
-    }
-
-    /**
-     * Get token for a given user and given session
-     *
-     * @param int $userid
-     * @param string $sid
-     * @return false|string
-     */
-    protected static function get_token_for_user(int $userid, string $sid) {
-        return substr(md5($sid . '/' . $userid . '/' . get_site_identifier()), 0, 10);
-    }
-
-    /**
-     * Validate that a token corresponds to one of the users open sessions
-     *
-     * @param int $userid
-     * @param string $token
-     * @return bool
-     */
-    public static function validate_token(int $userid, string $token) {
-        global $DB;
-        $sessions = $DB->get_records('sessions', ['userid' => $userid]);
-        foreach ($sessions as $session) {
-            if (self::get_token_for_user($userid, $session->sid) === $token) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Get all notifications for a given user
-     *
-     * @param int $userid
-     * @param int $fromid
-     * @param int $fromtimestamp
-     * @return array
-     * @throws \coding_exception
-     * @throws \dml_exception
-     */
-    public function get_all(int $userid, int $fromid, int $fromtimestamp): array {
-        global $DB;
-        $events = [];
-        if ($fromid == -1) {
-            $events = $DB->get_records_select(self::TABLENAME,
-                'targetuser = :userid
-               AND timecreated > :fromtimestamp',
-                [
-                    'userid' => $userid,
-                    'fromtimestamp' => $fromtimestamp,
-                ],
-            'id', 'id, contextid, component, area, itemid, payload');
-        } else {
-            $events = $DB->get_records_select(self::TABLENAME,
-                'targetuser = :userid
-               AND id > :fromid',
-                [
-                    'userid' => $userid,
-                    'fromid' => $fromid,
-                ],
-                'id', 'id, contextid, component, area, itemid, payload');
-        }
-
-        array_walk($events, function(&$item) {
-            $item->payload = @json_decode($item->payload, true);
-            $context = \context::instance_by_id($item->contextid);
-            $item->context = ['id' => $context->id, 'contextlevel' => $context->contextlevel,
-                'instanceid' => $context->instanceid];
-            unset($item->contextid);
-        });
-        return $events;
-    }
-
-    /**
-     * Delay between checks (or between short poll requests), ms
-     *
-     * @return int sleep time between checks, in milliseconds
-     */
-    public function get_delay_between_checks(): int {
-        $period = get_config('rtcomms_phppoll', 'checkinterval');
-        return max($period, 200);
-    }
-
-    /**
-     * Maximum duration for poll requests
-     *
-     * @return int time in seconds
-     */
-    public function get_request_timeout(): float {
-        $duration = get_config('rtcomms_phppoll', 'requesttimeout');
-        return (isset($duration) && $duration !== false) ? (float)$duration : 30;
+    function get_poll_handler()  {
+        return $this->poll;
     }
 }

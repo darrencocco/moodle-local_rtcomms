@@ -61,7 +61,7 @@ define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents)
         },
 
         publish: function(message) {
-            PubSub.publish(this.channelName(message.context, message.component, message.area, message.itemid), message);
+            PubSub.publish(this.channelName(message.context.id, message.component, message.area, message.itemid), message);
         },
 
         connectionFailure: function() {

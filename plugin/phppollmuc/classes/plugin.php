@@ -18,6 +18,7 @@ namespace rtcomms_phppollmuc;
 defined('MOODLE_INTERNAL') || die();
 
 use Closure;
+use rtcomms_phppoll\token;
 use tool_realtime\plugin_base;
 
 /**
@@ -27,21 +28,11 @@ use tool_realtime\plugin_base;
  * @copyright   2024 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class plugin extends plugin_base {
-
-    /** @var bool */
-    static protected $initialised = false;
-    /** @var string */
-    const TABLENAME = 'rtcomms_phppollmuc';
-
-
-    /**
-     * Is the plugin setup completed
-     *
-     * @return bool
-     */
-    public function is_set_up(): bool {
-        return true;
+class plugin extends \rtcomms_phppoll\plugin {
+    public function __construct() {
+        self::$pluginname = 'phppollmuc';
+        $this->token = new token();
+        $this->poll = new poll($this->token);
     }
 
     /**
@@ -69,15 +60,11 @@ class plugin extends plugin_base {
     }
 
     /**
-     * Intitialises realtime tool for Javascript subscriptions
+     * Enables client side portion of polling.
      *
      */
-    public function init(): void {
+    protected function init_js(): void {
         global $PAGE, $USER;
-        if (!$this->is_set_up() || !isloggedin() || isguestuser() || self::$initialised) {
-            return;
-        }
-        self::$initialised = true;
         $earliestmessagecreationtime = $_SERVER['REQUEST_TIME'];
         $maxfailures = get_config('rtcomms_phppollmuc', 'maxfailures');
         $polltype = get_config('rtcomms_phppollmuc', 'polltype');

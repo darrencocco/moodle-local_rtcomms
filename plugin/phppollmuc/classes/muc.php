@@ -26,6 +26,9 @@ class muc {
         $this->eventtracker = \cache::make('rtcomms_phppollmuc', 'tracker');
     }
 
+    /**
+     * @return muc
+     */
     public static function get_instance() {
         if (is_null(self::$singleton)) {
             self::$singleton = new muc();

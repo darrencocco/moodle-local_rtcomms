@@ -114,8 +114,10 @@ define(['tool_realtime/api'], function(api) {
     Object.assign(PhpPoll.prototype, phpPollPrototype);
     let instance = new PhpPoll();
     let pub = {
-        init: (userId, token, pollURLParam, maxDelay, maxFailures, earliestMessageCreationTime, pollType) => {
-            instance.init(userId, token, pollURLParam, maxDelay, maxFailures, earliestMessageCreationTime, pollType);
+        init: (configuration) => {
+            instance.init(configuration.userId, configuration.token, configuration.pollURLParam,
+                configuration.maxDelay, configuration.maxFailures, configuration.earliestMessageCreationTime,
+                configuration.pollType);
         },
         subscribe: () => {
             instance.subscribe();
