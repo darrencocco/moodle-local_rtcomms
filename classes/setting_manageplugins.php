@@ -17,12 +17,12 @@
 /**
  * Store management setting.
  *
- * @package    tool_realtime
+ * @package    local_rtcomms
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_realtime;
+namespace local_rtcomms;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -36,7 +36,7 @@ require_once("$CFG->libdir/adminlib.php");
 /**
  * Class setting_manageplugins
  *
- * @package    tool_realtime
+ * @package    local_rtcomms
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -46,7 +46,7 @@ class setting_manageplugins extends \admin_setting {
      */
     public function __construct() {
         $this->nosave = true;
-        parent::__construct('tool_realtime_manageui', get_string('managerealtime', 'tool_realtime'), '', '');
+        parent::__construct('local_rtcomms_manageui', get_string('manage', 'local_rtcomms'), '', '');
     }
 
     /**
@@ -120,8 +120,8 @@ class setting_manageplugins extends \admin_setting {
 
         $pluginmanager = core_plugin_manager::instance();
 
-        $return = $OUTPUT->heading(get_string('availableplugins', 'tool_realtime'), 3, 'main', true);
-        $return .= $OUTPUT->box_start('generalbox realtimeui');
+        $return = $OUTPUT->heading(get_string('availableplugins', 'local_rtcomms'), 3, 'main', true);
+        $return .= $OUTPUT->box_start('generalbox rtcommsui');
 
         $table = new html_table();
         $table->head = array(get_string('name'), $strversion, $strenabled, $strsettings, $struninstall);
@@ -132,7 +132,7 @@ class setting_manageplugins extends \admin_setting {
 
         foreach (manager::get_installed_plugins_menu() as $plugin => $name) {
             $fullname = manager::PLUGINTYPE . '_' . $plugin;
-            /** @var \tool_realtime\plugininfo\rtcomms $plugininfo */
+            /** @var \local_rtcomms\plugininfo\rtcomms $plugininfo */
             $plugininfo = $pluginmanager->get_plugin_info($fullname);
             $version = get_config($fullname, 'version') ?: '';
 

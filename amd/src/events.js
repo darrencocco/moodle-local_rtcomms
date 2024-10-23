@@ -16,7 +16,7 @@
 /**
  * Events for the real time.
  *
- * @module     tool_realtime/events
+ * @module     local_rtcomms/events
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

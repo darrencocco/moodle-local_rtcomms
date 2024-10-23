@@ -18,7 +18,7 @@
 /**
  * Send events to event testing page
  *
- * @package    tool_realtime
+ * @package    local_rtcomms
  * @subpackage cli
  * @copyright  2020 Daniel Conquit, Matthew Gray, Nicholas Parker, Dan Thistlethwaite
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -50,13 +50,13 @@ if ($unrecognized) {
 
 if ($options['help']) {
     echo
-    "This CLI load tests the realtime tool
+    "This CLI load tests the rtcomms tool
 Options:
 -ec, --eventcount       number of events to send
 
 Example:
 
-\$ php admin/tool/realtime/cli/push_test_event.php --eventcount=3\n";
+\$ php local/rtcomms/cli/push_test_event.php --eventcount=3\n";
     die;
 }
 
@@ -73,7 +73,7 @@ $context = \context::instance_by_id(1);
 
 for ($counter = 0; $counter < $eventcount; $counter++) {
     $payload["eventReceived"] = microtime(true) * 1000;
-    \tool_realtime\api::notify($context, 'loadtest', 'loadtest', 1, $payload);
+    \local_rtcomms\api::notify($context, 'loadtest', 'loadtest', 1, $payload);
 }
 
 

@@ -30,4 +30,5 @@ function xmldb_rtcomms_phppoll_upgrade($oldversion)
 
         upgrade_plugin_savepoint(true, 2024071300, 'rtcomms', 'phppoll');
     }
+    return true;
 }

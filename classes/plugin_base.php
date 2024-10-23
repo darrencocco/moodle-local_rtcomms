@@ -17,12 +17,12 @@
 /**
  * Class plugin_base
  *
- * @package     tool_realtime
+ * @package     local_rtcomms
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_realtime;
+namespace local_rtcomms;
 
 use Closure;
 
@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class plugin_base
  *
- * @package     tool_realtime
+ * @package     local_rtcomms
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * File containing tests for tool_realtime.
+ * File containing tests for local_rtcomms.
  *
- * @package     tool_realtime
+ * @package     local_rtcomms
  * @category    test
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,22 +26,22 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The tool_realtime test class.
+ * The local_rtcomms test class.
  *
- * @package    tool_realtime
+ * @package    local_rtcomms
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_realtime_tool_realtime_testcase extends advanced_testcase {
+class local_rtcomms_local_rtcomms_testcase extends advanced_testcase {
 
     public function test_is_enabled() {
-        $this->assertNotEmpty(\tool_realtime\manager::get_enabled_plugin_name());
-        $this->assertNotEmpty(\tool_realtime\manager::get_installed_plugins());
+        $this->assertNotEmpty(\local_rtcomms\manager::get_enabled_plugin_name());
+        $this->assertNotEmpty(\local_rtcomms\manager::get_installed_plugins());
     }
 
     public function test_is_set_up() {
-        $this->assertTrue(\tool_realtime\manager::get_plugin()->is_set_up());
-        $this->assertTrue(\tool_realtime\manager::get_plugin()->is_enabled());
-        $this->assertEquals(\tool_realtime\manager::get_enabled_plugin_name(), \tool_realtime\manager::get_plugin()->get_name());
+        $this->assertTrue(\local_rtcomms\manager::get_plugin()->is_set_up());
+        $this->assertTrue(\local_rtcomms\manager::get_plugin()->is_enabled());
+        $this->assertEquals(\local_rtcomms\manager::get_enabled_plugin_name(), \local_rtcomms\manager::get_plugin()->get_name());
     }
 }

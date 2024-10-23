@@ -17,7 +17,7 @@
 /**
  * Plugin administration pages are defined here.
  *
- * @package     tool_realtime
+ * @package     local_rtcomms
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,25 +26,25 @@ defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
 
-    $ADMIN->add('tools', new admin_category('realtime', new lang_string('pluginname', 'tool_realtime')));
+    $ADMIN->add('tools', new admin_category('rtcomms', new lang_string('pluginname', 'local_rtcomms')));
 
-    $ADMIN->add('reports', new admin_externalpage('tool_realtime_report',
-        get_string('realtime:page', 'tool_realtime'),
-        new moodle_url('/admin/tool/realtime/index.php')));
+    $ADMIN->add('reports', new admin_externalpage('local_rtcomms_report',
+        get_string('rtcomms:page', 'local_rtcomms'),
+        new moodle_url('/local/rtcomms/index.php')));
 
 
-    $temp = new admin_settingpage('managerealtime', new lang_string('managerealtime', 'tool_realtime'));
-    $temp->add(new \tool_realtime\setting_manageplugins());
-    $ADMIN->add('realtime', $temp);
+    $temp = new admin_settingpage('managertcomms', new lang_string('manage', 'local_rtcomms'));
+    $temp->add(new \local_rtcomms\setting_manageplugins());
+    $ADMIN->add('rtcomms', $temp);
 
-    $temp->add(new admin_setting_configselect('tool_realtime/enabled',
-            new lang_string('enabledplugin', 'tool_realtime'),
-            new lang_string('enabledplugindesc', 'tool_realtime'), 'phppoll',
-            \tool_realtime\manager::get_installed_plugins_menu())
+    $temp->add(new admin_setting_configselect('local_rtcomms/enabled',
+            new lang_string('enabledplugin', 'local_rtcomms'),
+            new lang_string('enabledplugindesc', 'local_rtcomms'), 'phppoll',
+            \local_rtcomms\manager::get_installed_plugins_menu())
     );
 
     foreach (core_plugin_manager::instance()->get_plugins_of_type('rtcomms') as $plugin) {
-        /** @var \tool_realtime\plugininfo\rtcomms $plugin */
-        $plugin->load_settings($ADMIN, 'realtime', $hassiteconfig);
+        /** @var \local_rtcomms\plugininfo\rtcomms $plugin */
+        $plugin->load_settings($ADMIN, 'rtcomms', $hassiteconfig);
     }
 }

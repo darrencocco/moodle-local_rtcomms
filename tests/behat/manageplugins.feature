@@ -1,4 +1,4 @@
-@tool @tool_realtime
+@tool @local_rtcomms
 Feature: Management of real time backend plugins
   In order to configure real time events
   As an admin

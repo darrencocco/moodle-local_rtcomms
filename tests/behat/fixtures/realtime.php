@@ -20,35 +20,35 @@
  * This is not an example of how to use polling! Polling is designed to send notifications to OTHER
  * sessions and other users. This is just a test that can be executed in single-threaded behat.
  *
- * @package    tool_realtime
+ * @package    local_rtcomms
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(__DIR__.'/../../../../../../config.php');
+require_once(__DIR__.'/../../../../../config.php');
 
 // Only continue for behat site.
 defined('BEHAT_SITE_RUNNING') ||  die();
 
 require_login(0, false);
-$PAGE->set_url('/admin/tool/realtime/tests/behat/fixtures/realtime.php');
+$PAGE->set_url('/local/rtcomms/tests/behat/fixtures/realtime.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('admin');
 
 if ($test = optional_param('test', 0, PARAM_INT)) {
-    \tool_realtime\api::notify(context_user::instance($USER->id), 'tool_realtime', 'test',0,
+    \local_rtcomms\api::notify(context_user::instance($USER->id), 'local_rtcomms', 'test',0,
         function() use ($USER) {return [$USER->id];}, ['data' => $test]);
     exit;
 }
 
-$pluginname = \tool_realtime\manager::get_enabled_plugin_name();
+$pluginname = \local_rtcomms\manager::get_enabled_plugin_name();
 $usercontext = context_user::instance($USER->id);
-\tool_realtime\api::subscribe($usercontext, 'tool_realtime', 'test', 0);
+\local_rtcomms\api::subscribe($usercontext, 'local_rtcomms', 'test', 0);
 $usercontextid = $usercontext->id;
 echo $OUTPUT->header();
 $PAGE->requires->js_amd_inline(<<<EOL
     M.util.js_pending('initrealtimetest');
-    require(['jquery', 'tool_realtime/api'], function($, RealTimeAPI) {
+    require(['jquery', 'local_rtcomms/api'], function($, RealTimeAPI) {
         $('body').on('click', '.testform', function(e) {
             e.preventDefault();
             var ajax = new XMLHttpRequest();
@@ -56,7 +56,7 @@ $PAGE->requires->js_amd_inline(<<<EOL
             ajax.send();
         });
 
-        RealTimeAPI.subscribe({$usercontextid}, 'tool_realtime', 'test', 0,
+        RealTimeAPI.subscribe({$usercontextid}, 'local_rtcomms', 'test', 0,
             function(event) {
                 $('#realtimeresults').append('Received event for component ' + event.component +
                 ', area = ' + event.area + ', itemid = ' + event.itemid +

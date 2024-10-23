@@ -15,26 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Class realtime_tool_form
+ * Class rtcomms_tool_form
  *
- * @package     tool_realtime
+ * @package     local_rtcomms
  * @copyright  2020 Daniel Conquit, Matthew Gray, Nicholas Parker, Dan Thistlethwaite
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_realtime\form;
+namespace local_rtcomms\form;
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/lib/formslib.php');
 
 /**
- * Class realtime_tool_form
+ * Class rtcomms_tool_form
  *
- * @package     tool_realtime
+ * @package     local_rtcomms
  * @copyright   2020 Daniel Conquit, Matthew Gray, Nicholas Parker, Dan Thistlethwaite
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class realtime_tool_form extends \moodleform {
+class rtcomms_tool_form extends \moodleform {
     /**
      * Definition for the Moodle form on the realtime tool reporting page
      */
@@ -42,16 +42,16 @@ class realtime_tool_form extends \moodleform {
         global $CFG;
         $mform = $this->_form;
 
-        $mform->addElement('text', 'context', get_string('context', 'tool_realtime'));
+        $mform->addElement('text', 'context', get_string('context', 'local_rtcomms'));
         $mform->setType('context', PARAM_INT);
 
-        $mform->addElement('text', 'component', get_string('component', 'tool_realtime'));
+        $mform->addElement('text', 'component', get_string('component', 'local_rtcomms'));
         $mform->setType('component', PARAM_TEXT);
 
-        $mform->addElement('text', 'area', get_string('area', 'tool_realtime'));
+        $mform->addElement('text', 'area', get_string('area', 'local_rtcomms'));
         $mform->setType('area', PARAM_TEXT);
 
-        $mform->addElement('text', 'itemid', get_string('itemid', 'tool_realtime'));
+        $mform->addElement('text', 'itemid', get_string('itemid', 'local_rtcomms'));
         $mform->setType('itemid', PARAM_INT);
 
         $this->add_action_buttons();

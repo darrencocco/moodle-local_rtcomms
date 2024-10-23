@@ -17,14 +17,14 @@
 /**
  * Class api
  *
- * @package     tool_realtime
+ * @package     local_rtcomms
  * @copyright   2020 Moodle Pty Ltd <support@moodle.com>
  * @author      2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
 
-namespace tool_realtime;
+namespace local_rtcomms;
 
 use Closure;
 
@@ -33,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class api
  *
- * @package     tool_realtime
+ * @package     local_rtcomms
  * @copyright   2020 Moodle Pty Ltd <support@moodle.com>
  * @author      2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

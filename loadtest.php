@@ -17,34 +17,34 @@
 /**
  *  A page for testing realtime event pushing form CL.
  *
- * @package    tool_realtime
+ * @package    local_rtcomms
  * @copyright  2020 Daniel Conquit, Matthew Gray, Nicholas Parker, Dan Thistlethwaite
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/lib/adminlib.php');
 require "$CFG->libdir/tablelib.php";
 
-admin_externalpage_setup('tool_realtime_report');
-// Instantiate realtime_tool_form.
-$mform = new tool_realtime\form\realtime_tool_form();
-$url = new moodle_url('/admin/tool/realtime/');
+admin_externalpage_setup('local_rtcomms_report');
+// Instantiate rtcomms_tool_form.
+$mform = new local_rtcomms\form\rtcomms_tool_form();
+$url = new moodle_url('/local/rtcomms/');
 $PAGE->set_context(context_system::instance());
-$PAGE->set_title(get_string('loadtest', 'tool_realtime'));
-$PAGE->set_heading(get_string('loadtest', 'tool_realtime'));
+$PAGE->set_title(get_string('loadtest', 'local_rtcomms'));
+$PAGE->set_heading(get_string('loadtest', 'local_rtcomms'));
 echo $OUTPUT->header();
 $context = context::instance_by_id(1);
-tool_realtime\api::subscribe($context, 'loadtest', 'loadtest', 1);
+local_rtcomms\api::subscribe($context, 'loadtest', 'loadtest', 1);
 
-echo $OUTPUT->heading(get_string('eventtesting', 'tool_realtime'));
+echo $OUTPUT->heading(get_string('eventtesting', 'local_rtcomms'));
 Echo
 "<div id='testarea'></div>";
 echo $OUTPUT->footer();
 ?>
 
 <script type="text/javascript">
-    require(['core/pubsub', 'tool_realtime/events', 'tool_realtime/api'], function(PubSub, RealTimeEvents, api) {
+    require(['core/pubsub', 'local_rtcomms/events', 'local_rtcomms/api'], function(PubSub, RealTimeEvents, api) {
         var eventcounter = 0;
         var latency = 0;
         var averagelatency = 0;

@@ -4,7 +4,7 @@
  * @module     rtcomms_phppoll/realtime
  * @copyright  2024 Darren Cocco
  */
-define(['tool_realtime/api'], function(api) {
+define(['local_rtcomms/api'], function(api) {
     const phpPollPrototype = {
 
         pollType: {

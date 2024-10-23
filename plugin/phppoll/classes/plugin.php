@@ -27,7 +27,7 @@ namespace rtcomms_phppoll;
 defined('MOODLE_INTERNAL') || die();
 
 use Closure;
-use tool_realtime\plugin_base;
+use local_rtcomms\plugin_base;
 use get_config;
 
 /**
@@ -78,7 +78,7 @@ class plugin extends plugin_base {
         }
         $this->init();
         $fromtimestamp = microtime(true);
-        $PAGE->requires->js_call_amd('tool_realtime/api', 'subscribe',
+        $PAGE->requires->js_call_amd('local_rtcomms/api', 'subscribe',
             [ $context->id, $component, $area, $itemid, -1, -1]);
     }
 
@@ -88,8 +88,8 @@ class plugin extends plugin_base {
      */
     public function init(): void {
         // TODO check that area is defined only as letters and numbers.;
-        if (\tool_realtime\manager::get_enabled_plugin_name() !== self::$pluginname) {
-            throw new \coding_exception("Attempted to initialise a realtime plugin that is not enabled.");
+        if (\local_rtcomms\manager::get_enabled_plugin_name() !== self::$pluginname) {
+            throw new \coding_exception("Attempted to initialise a rtcomms plugin that is not enabled.");
         }
         if (!$this->is_set_up() || !isloggedin() || isguestuser() || self::$initialised) {
             return;
@@ -104,7 +104,7 @@ class plugin extends plugin_base {
         $earliestmessagecreationtime = $_SERVER['REQUEST_TIME'];
         $maxfailures = get_config('rtcomms_phppoll', 'maxfailures');
         $polltype = get_config('rtcomms_phppoll', 'polltype');
-        $url = new \moodle_url('/admin/tool/realtime/plugin/phppoll/poll.php');
+        $url = new \moodle_url('/local/rtcomms/plugin/phppoll/poll.php');
         $PAGE->requires->js_call_amd('rtcomms_phppoll/realtime',  'init', [[
                 "userId" => $USER->id,
                 "token" => $this->token::get_token(),

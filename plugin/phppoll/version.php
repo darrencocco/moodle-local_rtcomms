@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin */
 $plugin->component = 'rtcomms_phppoll';
-$plugin->release = '2.1';
+$plugin->release = '2.1.1';
 $plugin->maturity = MATURITY_BETA;
-$plugin->version = 2024102000;
+$plugin->version = 2024102400;
 $plugin->requires = 2022081800;

@@ -17,24 +17,24 @@
 /**
  * Plugin strings are defined here.
  *
- * @package     tool_realtime
+ * @package     local_rtcomms
  * @category    string
- * @copyright   2020 Marina Glancy
+ * @copyright   2024 Marina Glancy, Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['availableplugins'] = 'Available real time backend plugins';
-$string['enabledplugin'] = 'Enabled real time backend plugin';
-$string['enabledplugindesc'] = 'Select the real time backend plugin that is used on the site. If the selected plugin is not configured it will fall back to the default one';
-$string['managerealtime'] = 'Manage Real time backend plugins';
+$string['availableplugins'] = 'Available real time comms backend plugins';
+$string['enabledplugin'] = 'Enabled real time comms backend plugin';
+$string['enabledplugindesc'] = 'Select the real time comms backend plugin that is used on the site. If the selected plugin is not configured it will fall back to the default one';
+$string['manage'] = 'Manage real time comms backend plugins';
 $string['pluginname'] = 'Real time events';
 $string['privacy:metadata'] = 'The Real time events plugin does not store any personal data.';
 $string['subplugintype_rtcomms'] = 'Real time backend plugin';
 $string['subplugintype_rtcomms_plural'] = 'Real time backend plugins';
 $string['eventtesting'] = 'Event Display Area';
-$string['realtime:page'] = 'Real Time Event Testing';
+$string['rtcomms:page'] = 'Real Time Comms Event Testing';
 $string['channeltable'] = 'Table of Subscribed Channels';
 $string['loadtest'] = 'Load Testing Tool';
 $string['context'] = 'Context';

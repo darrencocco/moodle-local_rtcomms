@@ -38,7 +38,7 @@ class rtcomms_phppoll_testcase extends advanced_testcase {
         global $USER;
         $this->resetAfterTest();
         /** @var \rtcomms_phppoll\plugin $plugin */
-        $plugin = \tool_realtime\manager::get_plugin();
+        $plugin = \local_rtcomms\manager::get_plugin();
         $this->assertInstanceOf(rtcomms_phppoll\plugin::class, $plugin);
         $this->setAdminUser();
         $context = context_user::instance($USER->id);

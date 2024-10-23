@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * tool_realtime related steps definitions.
+ * local_rtcomms related steps definitions.
  *
- * @package    tool_realtime
+ * @package    local_rtcomms
  * @category   test
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,14 +26,14 @@
 require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
 
 /**
- * tool_realtime related steps definitions.
+ * local_rtcomms related steps definitions.
  *
- * @package    tool_realtime
+ * @package    local_rtcomms
  * @category   test
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class behat_tool_realtime extends behat_base {
+class behat_local_rtcomms extends behat_base {
 
     /**
      * Visit a fixture page for testing stuff that is not available in core.
@@ -41,7 +41,7 @@ class behat_tool_realtime extends behat_base {
      * @Given /^I am on realtime fixture page$/
      */
     public function i_am_on_realtime_fixture_page() {
-        $url = '/admin/tool/realtime/tests/behat/fixtures/realtime.php';
+        $url = '/local/rtcomms/tests/behat/fixtures/realtime.php';
         $this->getSession()->visit($this->locate_path($url));
     }
 

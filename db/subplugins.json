@@ -1,5 +1,5 @@
 {
   "plugintypes": {
-    "rtcomms": "admin\/tool\/realtime/plugin"
+    "rtcomms": "local/rtcomms/plugin"
   }
 }

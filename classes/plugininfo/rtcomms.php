@@ -17,21 +17,21 @@
 /**
  * Class rtcomms
  *
- * @package     tool_realtime
+ * @package     local_rtcomms
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_realtime\plugininfo;
+namespace local_rtcomms\plugininfo;
 
 defined('MOODLE_INTERNAL') || die();
 
-use tool_realtime\manager;
+use local_rtcomms\manager;
 
 /**
  * Class rtcomms
  *
- * @package     tool_realtime
+ * @package     local_rtcomms
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -97,7 +97,7 @@ class rtcomms extends \core\plugininfo\base {
      * @return \moodle_url
      */
     public static function get_manage_url() {
-        return new \moodle_url('/admin/category.php', array('category' => 'realtime'));
+        return new \moodle_url('/admin/category.php', array('category' => 'rtcomms'));
     }
 
     /**

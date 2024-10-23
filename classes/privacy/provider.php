@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Privacy Subsystem implementation for tool_realtime.
+ * Privacy Subsystem implementation for local_rtcomms.
  *
- * @package    tool_realtime
+ * @package    local_rtcomms
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_realtime\privacy;
+namespace local_rtcomms\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Implementation of the privacy subsystem plugin provider for the tool_realtime
+ * Implementation of the privacy subsystem plugin provider for the local_rtcomms
  *
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

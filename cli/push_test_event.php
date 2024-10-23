@@ -17,7 +17,7 @@
 /**
  * Send events to event testing page
  *
- * @package    tool_realtime
+ * @package    local_rtcomms
  * @subpackage cli
  * @copyright  2020 Daniel Conquit, Matthew Gray, Nicholas Parker, Dan Thistlethwaite
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,7 +25,7 @@
 
 define('CLI_SCRIPT', true);
 
-require(__DIR__ . '/../../../../config.php');
+require(__DIR__ . '/../../../config.php');
 require_once("$CFG->libdir/clilib.php");
 require_once("$CFG->libdir/outputlib.php");
 
@@ -57,7 +57,7 @@ if ($unrecognized) {
 
 if ($options['help']) {
     echo
-    "This CLI creates a new event with specific context and allows testing of the realtime tool
+    "This CLI creates a new event with specific context and allows testing of the rtcomms tool
 Options:
 -c, --context       context for events
 -n, --component     component events relate to
@@ -67,7 +67,7 @@ Options:
 -h, --help          Print out this help
 Example:
 
-\$ php admin/tool/realtime/cli/push_test_event.php --context=3\
+\$ php local/rtcomms/cli/push_test_event.php --context=3\
         --component=thiscomponent --area=pingtest --id=123 --payload='{\"testkey1\":\"testvalue1\",\"testkey2\":\"testvalue2\"}'\n";
     die;
 }
@@ -106,5 +106,5 @@ if (!is_null($options['payload'])) {
 $payload["eventReceived"] = microtime(true) * 1000;
 
 
-\tool_realtime\api::notify($context, $component, $area, $id, $payload);
+\local_rtcomms\api::notify($context, $component, $area, $id, $payload);
 

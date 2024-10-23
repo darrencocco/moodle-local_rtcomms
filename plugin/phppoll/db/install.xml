@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="admin/tool/realtime/plugin/phppoll/db" VERSION="20200504" COMMENT="XMLDB file for Moodle admin/tool/realtime/plugin/phppoll"
+<XMLDB PATH="local/rtcomms/plugin/phppoll/db" VERSION="20200504" COMMENT="XMLDB file for Moodle local/rtcomms/plugin/phppoll"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="../../../../../../lib/xmldb/xmldb.xsd"
+    xsi:noNamespaceSchemaLocation="../../../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
     <TABLE NAME="rtcomms_phppoll" COMMENT="">

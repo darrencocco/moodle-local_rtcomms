@@ -1,10 +1,10 @@
 /**
  * Real time events
  *
- * @module     tool_realtime/events
+ * @module     local_rtcomms/events
  * @copyright  2020 Marina Glancy
  */
-define(['core/pubsub', 'tool_realtime/events'], function(PubSub, RealTimeEvents) {
+define(['core/pubsub', 'local_rtcomms/events'], function(PubSub, RealTimeEvents) {
 
     document.listofchannels = [];
 

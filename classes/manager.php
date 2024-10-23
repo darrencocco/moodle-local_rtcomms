@@ -17,19 +17,19 @@
 /**
  * Class manager
  *
- * @package     tool_realtime
+ * @package     local_rtcomms
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_realtime;
+namespace local_rtcomms;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
  * Class manager
  *
- * @package     tool_realtime
+ * @package     local_rtcomms
  * @copyright   2020 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -79,7 +79,7 @@ class manager {
      * @return string
      */
     public static function get_enabled_plugin_name(): string {
-        $selected = get_config('tool_realtime', 'enabled');
+        $selected = get_config('local_rtcomms', 'enabled');
         $all = self::get_installed_plugins();
         if (strlen($selected) && array_key_exists($selected, $all)) {
             return $selected;

@@ -17,7 +17,7 @@
 /**
  * Poll for updates.
  *
- * @package     rtcomms_phppollmuc
+ * @package     rtcomms_phppoll
  * @copyright   2024 Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -36,12 +36,12 @@ $token = required_param('token', PARAM_RAW);
 $lastidseen = optional_param('lastidseen', -1, PARAM_INT);
 $since = optional_param('since', -1, PARAM_INT);
 
-if (\tool_realtime\manager::get_enabled_plugin_name() !== 'phppoll') {
+if (\local_rtcomms\manager::get_enabled_plugin_name() !== 'phppoll') {
     echo json_encode(['error' => 'Plugin is not enabled']);
     exit;
 }
 
-$plugin = \tool_realtime\manager::get_plugin();
+$plugin = \local_rtcomms\manager::get_plugin();
 
 if ($lastidseen === -1 && $since === -1) {
     // TODO: Throw a required param like exception as one of the two must be defined.
