@@ -1,5 +1,9 @@
 # Real time events #
 
+## TODO
+- Change naming convention from "notify" to "send to clients".
+- Add "send to server" communication channel to design.
+
 ## How to use in plugins ##
 
 ### Notify about an event in PHP: ###
