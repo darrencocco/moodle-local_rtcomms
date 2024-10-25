@@ -25,6 +25,7 @@
 namespace local_rtcomms;
 
 use Closure;
+use tool_rtcomms\dispatcher;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -93,6 +94,7 @@ abstract class plugin_base {
     /**
      * Notifies all subscribers about an event
      *
+     * @deprecated
      * @param \context $context
      * @param string $component
      * @param string $area
@@ -100,5 +102,24 @@ abstract class plugin_base {
      * @param Closure $userselector
      * @param array|null $payload
      */
-    abstract public function notify(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null): void;
+    public function notify(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null): void {
+        debugging('Use of notify is deprecated', DEBUG_DEVELOPER);
+        $this->send_to_clients($context, $component, $area, $itemid, $userselector, $payload);
+    }
+
+    /**
+     * Notifies all subscribers about an event
+     *
+     * @param \context $context
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     * @param Closure $userselector
+     * @param array|null $payload
+     */
+    abstract public function send_to_clients(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null): void;
+
+    public function process_event($contextid, $component, $area, $itemid, $payload): void {
+        dispatcher::instance()->process_event($contextid, $component, $area, $itemid, $payload);
+    }
 }

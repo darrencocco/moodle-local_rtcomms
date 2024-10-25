@@ -128,7 +128,7 @@ class plugin extends plugin_base {
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public function notify(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null): void {
+    public function send_to_clients(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null): void {
         global $DB;
         $time = time();
         $targetuserids = $userselector($context, $component, $area, $itemid, $payload);

@@ -56,6 +56,11 @@ define(['core/pubsub', 'local_rtcomms/events'], function(PubSub, RealTimeEvents)
                 PubSub.subscribe(this.channelName(context, component, area, itemid), callback);
             }
         },
+
+        sendToServer: function(context, component, area, itemId, payload) {
+            return this.getPlugin().sendToServer(context, component, area, itemId, payload);
+        },
+
         getPlugin: function() {
             return document.delegatedplugin;
         },

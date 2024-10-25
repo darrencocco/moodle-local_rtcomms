@@ -27,6 +27,7 @@
 namespace local_rtcomms;
 
 use Closure;
+use tool_rtcomms\dispatcher;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -53,11 +54,30 @@ class api {
         manager::get_plugin()->subscribe($context, $component, $area, $itemid);
     }
 
+    public static function server_subscribe($context = "*", $component = "*", $area = "*", $itemid = "*") {
+
+    }
+
     /**
      * SEt up realtime tool
      */
     public static function init() {
         manager::get_plugin()->init();
+    }
+
+    /**
+     * Notifies all subscribers about an event
+     *
+     * @deprecated
+     * @param \context $context
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     * @param array|null $payload
+     */
+    public static function notify(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null) {
+        debugging("Notify is deprecated", DEBUG_DEVELOPER);
+        self::send_to_clients($context, $component, $area, $itemid, $userselector, $payload);
     }
 
     /**
@@ -69,7 +89,11 @@ class api {
      * @param int $itemid
      * @param array|null $payload
      */
-    public static function notify(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null) {
-        manager::get_plugin()->notify($context, $component, $area, $itemid, $userselector, $payload);
+    public static function send_to_clients(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null) {
+        manager::get_plugin()->send_to_clients($context, $component, $area, $itemid, $userselector, $payload);
+    }
+
+    public static function send_to_server($context, $component, $area, $itemid, $payload) {
+        manager::get_plugin()->process_event($context, $component, $area, $itemid, $payload);
     }
 }
