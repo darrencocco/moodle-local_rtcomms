@@ -1,6 +1,6 @@
 <?php
 
-namespace tool_rtcomms;
+namespace local_rtcomms;
 
 class dispatcher {
     /**
@@ -20,10 +20,10 @@ class dispatcher {
         $temp = [];
         foreach ($callbacks as $plugins) {
             foreach ($plugins as $callback) {
-                $temp[] = $callback;
+                $temp[] = $callback();
             }
         }
-        $this->listeners = array_merge_recursive($temp);
+        $this->listeners = array_merge(...$temp);
     }
 
     public static function instance(): dispatcher {
@@ -31,10 +31,10 @@ class dispatcher {
         return self::$instance;
     }
 
-    public function process_event($contextid, $component, $area, $itemid, $payload): void {
-        $interestedhandlers = $this->find_interested_handlers($contextid, $component, $area, $itemid);
-        foreach($interestedhandlers as $handler) {
-            $handler->get_handler()::instance()->process_event($contextid, $component, $area, $itemid, $payload);
+    public function process_event($from, $contextid, $component, $area, $itemid, $payload): void {
+        $interestedlisteners = $this->find_interested_listeners($contextid, $component, $area, $itemid);
+        foreach($interestedlisteners as $listener) {
+            $listener->get_handler()::instance()->process_event($from, $contextid, $component, $area, $itemid, $payload);
         }
     }
 
@@ -45,7 +45,7 @@ class dispatcher {
      * @param $itemid
      * @return listener_registration_interface[]
      */
-    protected function find_interested_handlers($contextid, $component, $area, $itemid): array {
+    protected function find_interested_listeners($contextid, $component, $area, $itemid): array {
         return array_filter($this->listeners,
             fn($listener) => $listener->is_interested($contextid, $component, $area, $itemid));
     }

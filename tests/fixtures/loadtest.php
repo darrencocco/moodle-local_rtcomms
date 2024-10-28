@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/../../../../config.php');
 require_once($CFG->dirroot . '/lib/adminlib.php');
 require "$CFG->libdir/tablelib.php";
 
@@ -90,7 +90,7 @@ echo $OUTPUT->footer();
 
         setInterval(function(){ updateTable() }, 3000);
 
-        PubSub.subscribe(RealTimeEvents.EVENT, function(data) {
+        api.subscribe(RealTimeEvents.EVENT, function(data) {
             eventcounter++;
             latency += new Date().getTime() - data['payload']['eventReceived'];
             calculateLatency();

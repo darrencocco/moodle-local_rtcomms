@@ -27,7 +27,6 @@
 namespace local_rtcomms;
 
 use Closure;
-use tool_rtcomms\dispatcher;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -52,10 +51,6 @@ class api {
      */
     public static function subscribe(\context $context, string $component, string $area, int $itemid) {
         manager::get_plugin()->subscribe($context, $component, $area, $itemid);
-    }
-
-    public static function server_subscribe($context = "*", $component = "*", $area = "*", $itemid = "*") {
-
     }
 
     /**
@@ -93,7 +88,7 @@ class api {
         manager::get_plugin()->send_to_clients($context, $component, $area, $itemid, $userselector, $payload);
     }
 
-    public static function send_to_server($context, $component, $area, $itemid, $payload) {
-        manager::get_plugin()->process_event($context, $component, $area, $itemid, $payload);
+    public static function send_to_server($from, $context, $component, $area, $itemid, $payload) {
+        manager::get_plugin()->process_event($from, $context, $component, $area, $itemid, $payload);
     }
 }

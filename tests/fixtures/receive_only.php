@@ -21,41 +21,29 @@
  * sessions and other users. This is just a test that can be executed in single-threaded behat.
  *
  * @package    local_rtcomms
- * @copyright  2020 Marina Glancy
+ * @copyright  2024 Marina Glancy, Darren Cocco
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(__DIR__.'/../../../../../config.php');
+require_once(__DIR__.'/../../../../config.php');
 
 // Only continue for behat site.
 defined('BEHAT_SITE_RUNNING') ||  die();
 
 require_login(0, false);
-$PAGE->set_url('/local/rtcomms/tests/behat/fixtures/realtime.php');
+$PAGE->set_url('/local/rtcomms/tests/fixtures/receive_only.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('admin');
 
-if ($test = optional_param('test', 0, PARAM_INT)) {
-    \local_rtcomms\api::notify(context_user::instance($USER->id), 'local_rtcomms', 'test',0,
-        function() use ($USER) {return [$USER->id];}, ['data' => $test]);
-    exit;
-}
 
+\local_rtcomms\api::init();
 $pluginname = \local_rtcomms\manager::get_enabled_plugin_name();
 $usercontext = context_user::instance($USER->id);
-\local_rtcomms\api::subscribe($usercontext, 'local_rtcomms', 'test', 0);
 $usercontextid = $usercontext->id;
 echo $OUTPUT->header();
 $PAGE->requires->js_amd_inline(<<<EOL
     M.util.js_pending('initrealtimetest');
     require(['jquery', 'local_rtcomms/api'], function($, RealTimeAPI) {
-        $('body').on('click', '.testform', function(e) {
-            e.preventDefault();
-            var ajax = new XMLHttpRequest();
-            ajax.open('GET', "{$PAGE->url}?test=" + $(e.currentTarget).data('linkid'), true);
-            ajax.send();
-        });
-
         RealTimeAPI.subscribe({$usercontextid}, 'local_rtcomms', 'test', 0,
             function(event) {
                 $('#realtimeresults').append('Received event for component ' + event.component +
@@ -73,12 +61,6 @@ EOL
 );
 
 ?>
-<p><a class="testform" data-linkid="1" href="#">
-    Test1
-</a></p>
-<p><a class="testform" data-linkid="2" href="#">
-    Test2
-</a></p>
 <div id="realtimeresults">
 </div>
 <?php

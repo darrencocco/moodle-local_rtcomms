@@ -25,7 +25,7 @@
 define('AJAX_SCRIPT', true);
 define('NO_MOODLE_COOKIES', true);
 // @codingStandardsIgnoreLine This script does not require login.
-require_once(__DIR__ . '/../../../../../config.php');
+require_once(__DIR__ . '/../../../../config.php');
 
 // We do not want to call require_login() here because we don't want to update 'lastaccess' and keep session alive.
 

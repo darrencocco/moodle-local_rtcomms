@@ -1,6 +1,6 @@
 <?php
 
-namespace tool_rtcomms;
+namespace local_rtcomms;
 
 interface listener_registration_interface {
 

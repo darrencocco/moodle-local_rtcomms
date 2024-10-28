@@ -46,7 +46,9 @@ class rtcomms_phppoll_testcase extends advanced_testcase {
         $plugin->send_to_clients($context, 'testcomponent', 'testarea', 7, function($context, $component, $area, $itemid, $payload) use ($USER) {
             return [$USER->id];
         }, ['a' => 'b']);
-        $results = $plugin->get_all($USER->id, 0, -1);
+        $method = new ReflectionMethod($plugin->get_poll_handler(), "get_all");
+        $method->setAccessible(true);
+        $results = $method->invoke($plugin->get_poll_handler(), $USER->id, 0, -1);
         $this->assertCount(1, $results);
         $result = (array)reset($results);
         unset($result['id']);

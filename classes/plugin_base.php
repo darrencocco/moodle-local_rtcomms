@@ -25,7 +25,6 @@
 namespace local_rtcomms;
 
 use Closure;
-use tool_rtcomms\dispatcher;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -119,7 +118,7 @@ abstract class plugin_base {
      */
     abstract public function send_to_clients(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null): void;
 
-    public function process_event($contextid, $component, $area, $itemid, $payload): void {
-        dispatcher::instance()->process_event($contextid, $component, $area, $itemid, $payload);
+    public function process_event($from, $contextid, $component, $area, $itemid, $payload): void {
+        dispatcher::instance()->process_event($from, $contextid, $component, $area, $itemid, $payload);
     }
 }

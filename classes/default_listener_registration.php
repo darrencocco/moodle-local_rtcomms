@@ -1,6 +1,6 @@
 <?php
 
-namespace tool_rtcomms;
+namespace local_rtcomms;
 
 class default_listener_registration implements listener_registration_interface {
 
@@ -14,6 +14,7 @@ class default_listener_registration implements listener_registration_interface {
         $this->component = $component;
         $this->area = $area;
         $this->itemid = $itemid;
+        $this->handler = $handler;
     }
 
     public static function instance(\stdClass $data): listener_registration_interface {
@@ -26,7 +27,7 @@ class default_listener_registration implements listener_registration_interface {
             "component" => $this->component,
             "area" => $this->area,
             "itemid" => $this->itemid,
-            "handler" => $$this->handler,
+            "handler" => $this->handler,
         ];
     }
 
