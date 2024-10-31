@@ -39,7 +39,7 @@ class dispatcher {
      * Registers listeners
      */
     protected function __construct() {
-        $callbacks = get_plugins_with_function("rtcomms_listener_registration");
+        $callbacks = get_plugins_with_function("rtcomms_listener_registration", "rtcomms.php");
         $temp = [];
         foreach ($callbacks as $plugins) {
             foreach ($plugins as $callback) {
