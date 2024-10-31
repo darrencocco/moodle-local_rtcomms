@@ -18,13 +18,11 @@
  * Class rtcomms_phppoll\plugin
  *
  * @package     rtcomms_phppoll
- * @copyright   2020 Marina Glancy
+ * @copyright   2024 Marina Glancy, Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace rtcomms_phppoll;
-
-defined('MOODLE_INTERNAL') || die();
 
 use Closure;
 use local_rtcomms\plugin_base;
@@ -34,7 +32,7 @@ use get_config;
  * Class rtcomms_phppoll\plugin
  *
  * @package     rtcomms_phppoll
- * @copyright   2020 Marina Glancy
+ * @copyright   2024 Marina Glancy, Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plugin extends plugin_base {
@@ -43,10 +41,28 @@ class plugin extends plugin_base {
     static protected $initialised = false;
     /** @var string */
     const TABLENAME = 'rtcomms_phppoll';
+    /**
+     * Name of the plugin used for checks.
+     *
+     * Here so that it can be overridden in plugins
+     * depending on it.
+     * @var string
+     */
     static protected $pluginname;
+    /**
+     * Override this in constructor to change data storage techniques.
+     * @var \rtcomms_phppoll\poll
+     */
     protected $poll;
+    /**
+     * Override this in constructor to change auth methods.
+     * @var \rtcomms_phppoll\token
+     */
     protected $token;
 
+    /**
+     * I mean... it's a zero arg constructor.
+     */
     public function __construct() {
         self::$pluginname = 'phppoll';
         $this->token = new token();
@@ -87,7 +103,7 @@ class plugin extends plugin_base {
      *
      */
     public function init(): void {
-        // TODO check that area is defined only as letters and numbers.;
+        // TODO check that area is defined only as letters and numbers.
         if (\local_rtcomms\manager::get_enabled_plugin_name() !== self::$pluginname) {
             throw new \coding_exception("Attempted to initialise a rtcomms plugin that is not enabled.");
         }
@@ -99,6 +115,12 @@ class plugin extends plugin_base {
         $this->init_js();
     }
 
+    /**
+     * Injects JS for starting PHP Poll client.
+     *
+     * @return void
+     * @throws \dml_exception
+     */
     protected function init_js(): void {
         global $PAGE, $USER;
         $earliestmessagecreationtime = $_SERVER['REQUEST_TIME'];
@@ -155,7 +177,12 @@ class plugin extends plugin_base {
         $DB->insert_records(self::TABLENAME, $notifications);
     }
 
-    function get_poll_handler()  {
+    /**
+     * Returns poll handler.
+     *
+     * @return poll
+     */
+    public function get_poll_handler() {
         return $this->poll;
     }
 }

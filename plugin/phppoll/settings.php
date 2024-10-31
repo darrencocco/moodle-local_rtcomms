@@ -46,6 +46,6 @@ if ($hassiteconfig) {
             'short',
             [
                 'short' => new lang_string('shortpoll', 'rtcomms_phppoll'),
-                'long' => new lang_string('longpoll', 'rtcomms_phppoll')
+                'long' => new lang_string('longpoll', 'rtcomms_phppoll'),
             ]));
 }

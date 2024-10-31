@@ -19,7 +19,7 @@
  *
  * @package    local_rtcomms
  * @category   test
- * @copyright  2020 Marina Glancy
+ * @copyright  2024 Marina Glancy, Darren Cocco
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -76,9 +76,9 @@ class behat_local_rtcomms extends behat_base {
         if (is_numeric($contextid)) {
             $contextid = (int) $contextid;
             $context = context::instance_by_id($contextid);
-        } elseif ($contextid === "{user}") {
+        } else if ($contextid === "{user}") {
             $context = context_user::instance($targetuser->id);
-        } elseif ($contextid === "{system}") {
+        } else if ($contextid === "{system}") {
             $context = context_system::instance();
         } else {
             throw new coding_exception("Unknown context");
@@ -87,5 +87,4 @@ class behat_local_rtcomms extends behat_base {
         \local_rtcomms\api::send_to_clients($context, $component, $area, $itemid, fn() => [$targetuser->id],
             $decodedpayload);
     }
-
 }

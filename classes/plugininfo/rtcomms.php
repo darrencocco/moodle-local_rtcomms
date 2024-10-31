@@ -24,8 +24,6 @@
 
 namespace local_rtcomms\plugininfo;
 
-defined('MOODLE_INTERNAL') || die();
-
 use local_rtcomms\manager;
 
 /**
@@ -80,7 +78,7 @@ class rtcomms extends \core\plugininfo\base {
             return;
         }
 
-        if (!$hassiteconfig or !file_exists($this->full_path('settings.php'))) {
+        if (!$hassiteconfig || !file_exists($this->full_path('settings.php'))) {
             return;
         }
 
@@ -97,7 +95,7 @@ class rtcomms extends \core\plugininfo\base {
      * @return \moodle_url
      */
     public static function get_manage_url() {
-        return new \moodle_url('/admin/category.php', array('category' => 'rtcomms'));
+        return new \moodle_url('/admin/category.php', ['category' => 'rtcomms']);
     }
 
     /**

@@ -24,8 +24,6 @@
 
 namespace rtcomms_phppoll\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Implementation of the privacy subsystem plugin provider for the rtcomms_phppoll
  *

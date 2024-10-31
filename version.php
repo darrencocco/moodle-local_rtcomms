@@ -18,7 +18,7 @@
  * Plugin version and other meta-data are defined here.
  *
  * @package     local_rtcomms
- * @copyright   2020 Marina Glancy
+ * @copyright   2024 Marina Glancy, Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

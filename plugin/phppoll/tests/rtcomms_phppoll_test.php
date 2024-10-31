@@ -23,7 +23,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace rtcomms_phppoll;
 
 /**
  * The rtcomms_phppoll test class.
@@ -32,21 +32,20 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rtcomms_phppoll_testcase extends advanced_testcase {
+class rtcomms_phppoll_test extends \advanced_testcase {
 
     public function test_notify_and_get_all() {
         global $USER;
         $this->resetAfterTest();
         /** @var \rtcomms_phppoll\plugin $plugin */
         $plugin = \local_rtcomms\manager::get_plugin();
-        $this->assertInstanceOf(rtcomms_phppoll\plugin::class, $plugin);
-        $this->setAdminUser();
-        $context = context_user::instance($USER->id);
+        $this->assertInstanceOf(\rtcomms_phppoll\plugin::class, $plugin);
+        self::setAdminUser();
+        $context = \context_user::instance($USER->id);
         $plugin->subscribe($context, 'testcomponent', 'testarea', 7);
-        $plugin->send_to_clients($context, 'testcomponent', 'testarea', 7, function($context, $component, $area, $itemid, $payload) use ($USER) {
-            return [$USER->id];
-        }, ['a' => 'b']);
-        $method = new ReflectionMethod($plugin->get_poll_handler(), "get_all");
+        $plugin->send_to_clients($context, 'testcomponent', 'testarea', 7, fn() => [$USER->id],
+            ['a' => 'b']);
+        $method = new \ReflectionMethod($plugin->get_poll_handler(), "get_all");
         $method->setAccessible(true);
         $results = $method->invoke($plugin->get_poll_handler(), $USER->id, 0, -1);
         $this->assertCount(1, $results);
@@ -61,9 +60,7 @@ class rtcomms_phppoll_testcase extends advanced_testcase {
                 'id' => $context->id,
                 'contextlevel' => CONTEXT_USER,
                 'instanceid' => $USER->id,
-            ]
+            ],
         ], $result);
     }
-
-
 }

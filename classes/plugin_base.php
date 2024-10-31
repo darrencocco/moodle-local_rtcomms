@@ -18,15 +18,13 @@
  * Class plugin_base
  *
  * @package     local_rtcomms
- * @copyright   2020 Marina Glancy
+ * @copyright   2024 Marina Glancy, Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace local_rtcomms;
 
 use Closure;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Class plugin_base
@@ -101,7 +99,8 @@ abstract class plugin_base {
      * @param Closure $userselector
      * @param array|null $payload
      */
-    public function notify(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null): void {
+    public function notify(\context $context, string $component, string $area, int $itemid,
+                           Closure $userselector, ?array $payload = null): void {
         debugging('Use of notify is deprecated', DEBUG_DEVELOPER);
         $this->send_to_clients($context, $component, $area, $itemid, $userselector, $payload);
     }
@@ -116,8 +115,20 @@ abstract class plugin_base {
      * @param Closure $userselector
      * @param array|null $payload
      */
-    abstract public function send_to_clients(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null): void;
+    abstract public function send_to_clients(\context $context, string $component, string $area, int $itemid,
+                                             Closure $userselector, ?array $payload = null): void;
 
+    /**
+     * Hands event processing to the dispatcher.
+     *
+     * @param integer $from
+     * @param integer $contextid
+     * @param string $component
+     * @param string $area
+     * @param integer $itemid
+     * @param array $payload
+     * @return void
+     */
     public function process_event($from, $contextid, $component, $area, $itemid, $payload): void {
         dispatcher::instance()->process_event($from, $contextid, $component, $area, $itemid, $payload);
     }

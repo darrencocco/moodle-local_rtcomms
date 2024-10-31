@@ -1,4 +1,4 @@
- <?php
+<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace local_rtcomms;
 
 /**
  * The local_rtcomms test class.
@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class local_rtcomms_local_rtcomms_testcase extends advanced_testcase {
+class local_rtcomms_test extends \advanced_testcase {
 
     public function test_is_enabled() {
         $this->assertNotEmpty(\local_rtcomms\manager::get_enabled_plugin_name());
