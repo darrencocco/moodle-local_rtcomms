@@ -1,11 +1,49 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Database polling service.
+ * @package rtcomms_phppoll
+ * @copyright 2024 Darren Cocco
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace rtcomms_phppoll;
 
+/**
+ * Polling class.
+ */
 class poll {
+    /**
+     * @var \rtcomms_phppoll\token
+     */
     protected $tokenprocessor;
+    /**
+     * Name of the table to get messages/events from.
+     *
+     * @var string
+     */
     protected $tablename;
-    function __construct($tokenprocessor, $tablename) {
+
+    /**
+     * Constructor for poll service.
+     * @param \rtcomms_phppoll\token $tokenprocessor
+     * @param string $tablename
+     */
+    public function __construct($tokenprocessor, $tablename) {
         $this->tokenprocessor = $tokenprocessor;
         $this->tablename = $tablename;
     }
@@ -73,7 +111,22 @@ class poll {
         return (isset($duration) && $duration !== false) ? (float)$duration : 30;
     }
 
-    function longpoll($userid, $token, $lastidseen, $since) {
+    /**
+     * Repeatedly retrieves all available messages.
+     *
+     * Keeps trying to retrieve available messages
+     * until either messages are found or the configured
+     * time limit has elapsed.
+     *
+     * @param integer $userid
+     * @param string $token
+     * @param integer $lastidseen
+     * @param integer $since
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function longpoll($userid, $token, $lastidseen, $since) {
         \core_php_time_limit::raise();
         $starttime = microtime(true);
         $maxduration = $this->get_request_timeout(); // In seconds as float.
@@ -103,7 +156,18 @@ class poll {
         }
     }
 
-    function shortpoll($userid, $token, $lastidseen, $since) {
+    /**
+     * Attempts to retrieve messages once.
+     *
+     * @param integer $userid
+     * @param string $token
+     * @param integer $lastidseen
+     * @param integer $since
+     * @return void
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function shortpoll($userid, $token, $lastidseen, $since) {
         if (!$this->tokenprocessor::validate_token($userid, $token)) {
             // User is no longer logged in or token is wrong. Do not poll any more.
             // We check this in a loop because user session may end while we are still waiting.

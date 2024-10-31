@@ -4,7 +4,7 @@
  * @module     rtcomms_phppoll/realtime
  * @copyright  2024 Darren Cocco
  */
-define(['local_rtcomms/api'], function(api) {
+define(['local_rtcomms/api', 'core/ajax'], function(api, ajax) {
     const phpPollPrototype = {
 
         pollType: {
@@ -95,6 +95,18 @@ define(['local_rtcomms/api'], function(api) {
         subscribe() {
             this.channels++;
             this.queueNextPoll();
+        },
+        sendToServer(context, component, area, itemId, payload) {
+            ajax.call([{
+                methodname: 'rtcomms_phppoll_send',
+                args: {
+                    contextid: context,
+                    component: component,
+                    area: area,
+                    itemid: itemId,
+                    payload: JSON.stringify(payload),
+                },
+            }]);
         }
     };
 
@@ -121,6 +133,9 @@ define(['local_rtcomms/api'], function(api) {
         },
         subscribe: () => {
             instance.subscribe();
+        },
+        sendToServer: (context, component, area, itemId, payload) => {
+            instance.sendToServer(context, component, area, itemId, payload);
         },
     };
     return pub;

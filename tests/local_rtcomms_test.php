@@ -15,34 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * local_rtcomms related steps definitions.
+ * File containing tests for local_rtcomms.
  *
- * @package    local_rtcomms
- * @category   test
- * @copyright  2020 Marina Glancy
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_rtcomms
+ * @category    test
+ * @copyright   2020 Marina Glancy
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
+namespace local_rtcomms;
 
 /**
- * local_rtcomms related steps definitions.
+ * The local_rtcomms test class.
  *
  * @package    local_rtcomms
- * @category   test
  * @copyright  2020 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class behat_local_rtcomms extends behat_base {
+class local_rtcomms_test extends \advanced_testcase {
 
-    /**
-     * Visit a fixture page for testing stuff that is not available in core.
-     *
-     * @Given /^I am on realtime fixture page$/
-     */
-    public function i_am_on_realtime_fixture_page() {
-        $url = '/local/rtcomms/tests/behat/fixtures/realtime.php';
-        $this->getSession()->visit($this->locate_path($url));
+    public function test_is_enabled() {
+        $this->assertNotEmpty(\local_rtcomms\manager::get_enabled_plugin_name());
+        $this->assertNotEmpty(\local_rtcomms\manager::get_installed_plugins());
     }
 
+    public function test_is_set_up() {
+        $this->assertTrue(\local_rtcomms\manager::get_plugin()->is_set_up());
+        $this->assertTrue(\local_rtcomms\manager::get_plugin()->is_enabled());
+        $this->assertEquals(\local_rtcomms\manager::get_enabled_plugin_name(), \local_rtcomms\manager::get_plugin()->get_name());
+    }
 }

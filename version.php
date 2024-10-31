@@ -18,7 +18,7 @@
  * Plugin version and other meta-data are defined here.
  *
  * @package     local_rtcomms
- * @copyright   2020 Marina Glancy
+ * @copyright   2024 Marina Glancy, Darren Cocco
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin */
 $plugin->component = 'local_rtcomms';
-$plugin->release = '2.2.1';
+$plugin->release = '2.3.0';
 $plugin->maturity = MATURITY_BETA;
-$plugin->version = 2024102400;
+$plugin->version = 2024102500;
 $plugin->requires = 2022081800;

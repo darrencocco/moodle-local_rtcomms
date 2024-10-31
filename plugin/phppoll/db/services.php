@@ -15,23 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tasks definitions.
+ * Web service definitions.
  *
- * @package    rtcomms_phppoll
- * @copyright  2020 Marina Glancy
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package rtcomms_phppoll
+ * @copyright 2024 Darren Cocco
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$tasks = [
-    [
-        'classname' => 'rtcomms_phppoll\task\cleanup_task',
-        'blocking' => 0,
-        'minute' => '*/5',
-        'hour' => '*',
-        'day' => '*',
-        'dayofweek' => '*',
-        'month' => '*',
+$functions = [
+    "rtcomms_phppoll_send" => [
+        "classname" => "rtcomms_phppoll\\external\\send",
+        "description" => "Endpoint for sending messages to the server",
+        "type" => "write",
+        "ajax" => true,
+        "services" => [
+            MOODLE_OFFICIAL_MOBILE_SERVICE,
+        ],
     ],
 ];

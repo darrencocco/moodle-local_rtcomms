@@ -25,7 +25,7 @@
 define('AJAX_SCRIPT', true);
 define('NO_MOODLE_COOKIES', true);
 // @codingStandardsIgnoreLine This script does not require login.
-require_once(__DIR__ . '/../../../../../config.php');
+require_once(__DIR__ . '/../../../../config.php');
 
 // We do not want to call require_login() here because we don't want to update 'lastaccess' and keep session alive.
 
@@ -44,14 +44,14 @@ if (\local_rtcomms\manager::get_enabled_plugin_name() !== 'phppoll') {
 $plugin = \local_rtcomms\manager::get_plugin();
 
 if ($lastidseen === -1 && $since === -1) {
-    // TODO: Throw a required param like exception as one of the two must be defined.
+    echo json_encode(['error' => 'must have lastidseen or since param']);
 }
 
 $polltype = get_config('rtcomms_phppoll', 'polltype');
 
 if ($polltype === 'short') {
     $plugin->get_poll_handler()->shortpoll($userid, $token, $lastidseen, $since);
-} elseif ($polltype === 'long') {
+} else if ($polltype === 'long') {
     $plugin->get_poll_handler()->longpoll($userid, $token, $lastidseen, $since);
 } else {
     echo json_encode(['error' => 'Unknown poll type']);

@@ -28,8 +28,6 @@ namespace local_rtcomms;
 
 use Closure;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class api
  *
@@ -63,13 +61,45 @@ class api {
     /**
      * Notifies all subscribers about an event
      *
+     * @deprecated
      * @param \context $context
      * @param string $component
      * @param string $area
      * @param int $itemid
      * @param array|null $payload
      */
-    public static function notify(\context $context, string $component, string $area, int $itemid, Closure $userselector, ?array $payload = null) {
-        manager::get_plugin()->notify($context, $component, $area, $itemid, $userselector, $payload);
+    public static function notify(\context $context, string $component, string $area, int $itemid,
+                                  Closure $userselector, ?array $payload = null) {
+        debugging("Notify is deprecated", DEBUG_DEVELOPER);
+        self::send_to_clients($context, $component, $area, $itemid, $userselector, $payload);
+    }
+
+    /**
+     * Notifies all subscribers about an event
+     *
+     * @param \context $context
+     * @param string $component
+     * @param string $area
+     * @param int $itemid
+     * @param array|null $payload
+     */
+    public static function send_to_clients(\context $context, string $component, string $area, int $itemid,
+                                           Closure $userselector, ?array $payload = null) {
+        manager::get_plugin()->send_to_clients($context, $component, $area, $itemid, $userselector, $payload);
+    }
+
+    /**
+     * Send a message to server listeners interested in it.
+     *
+     * @param integer $from
+     * @param integer $context
+     * @param string $component
+     * @param string $area
+     * @param integer $itemid
+     * @param array $payload
+     * @return void
+     */
+    public static function send_to_server($from, $context, $component, $area, $itemid, $payload) {
+        manager::get_plugin()->process_event($from, $context, $component, $area, $itemid, $payload);
     }
 }

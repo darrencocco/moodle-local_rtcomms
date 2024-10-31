@@ -15,23 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tasks definitions.
+ * Callbacks etc.
  *
- * @package    rtcomms_phppoll
- * @copyright  2020 Marina Glancy
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package local_rtcomms
+ * @copyright 2024 Darren Cocco
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$tasks = [
-    [
-        'classname' => 'rtcomms_phppoll\task\cleanup_task',
-        'blocking' => 0,
-        'minute' => '*/5',
-        'hour' => '*',
-        'day' => '*',
-        'dayofweek' => '*',
-        'month' => '*',
-    ],
-];
+/**
+ * Provides test listener registration.
+ *
+ * @return \local_rtcomms\listener_registration_interface[]
+ */
+function local_rtcomms_rtcomms_listener_registration() {
+    return [
+        \local_rtcomms\default_listener_registration::instance((object)[
+            "contextid" => "*",
+            "component" => "local_rtcomms",
+            "area" => "test",
+            "itemid" => "*",
+            "handler" => "\\local_rtcomms\\test_handler",
+        ]),
+    ];
+}

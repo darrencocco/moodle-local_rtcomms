@@ -24,8 +24,6 @@
 
 namespace local_rtcomms\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Implementation of the privacy subsystem plugin provider for the local_rtcomms
  *
