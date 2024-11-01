@@ -104,7 +104,7 @@ class poll {
     /**
      * Maximum duration for poll requests
      *
-     * @return int time in seconds
+     * @return float time in seconds
      */
     public function get_request_timeout(): float {
         $duration = get_config('rtcomms_phppoll', 'requesttimeout');

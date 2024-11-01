@@ -145,7 +145,7 @@ class plugin extends plugin_base {
      * @param string $component
      * @param string $area
      * @param int $itemid
-     * @param string $userselector
+     * @param closure $userselector
      * @param array|null $payload
      * @throws \coding_exception
      * @throws \dml_exception
